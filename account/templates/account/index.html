@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Home{% endblock %}</title>
+    </head>
+    <body>
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+        {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+            <p>welcome {{ user.username }}</p>
+        {% else %}
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+
+        {% block body %}
+        {% endblock %}
+
+    </body>
+    
+</html>
