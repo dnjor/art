@@ -20,12 +20,12 @@ def register(request):
             user.set_password(form.cleaned_data["password"])
             user.save()
             return render(request, "account/index.html",{
-                "message": "User created successfully", 
+                "message": "تم انشاء الحساب بالنجاح", 
                 "user": user
                 })
         else:
             return render(request, "account/register.html", {
-                #"message": "Error creating user",
+                "message": "حدث خطأ في انشاء الحساب",
                 "form": form
             })
     return render(request, "account/register.html", {

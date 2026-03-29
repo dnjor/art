@@ -1,0 +1,22 @@
+{% extends "account/index.html" %}
+
+{% block title %} معرض الاعمال {% endblock %}
+
+{% block body %}
+    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
+    <h1>معرض الاعمال</h1>
+    {% if user.is_staff %}
+        <a href="{% url 'uplode_painting' %}"> رفع لوحة </a>
+    {% endif  %}
+    {% if painting %}
+        {% for paint in painting %}
+            <h3> {{paint.title}} </h3>
+            <img src="{{ paint.picture.url }}" alt="{{ paint.title }}">
+            <p> {{paint.description}} </p>
+            {% endfor %}
+    {% else %}
+        <p>لا توجد أعمال فنية متاحة حالياً.</p>
+    {% endif %}
+
+    
+{% endblock %}

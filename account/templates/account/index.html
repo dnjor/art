@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{% block title %}Home{% endblock %}</title>
+        <title>{% block title %} الصفحة الرئيسية| Arwa art {% endblock %}</title>
     </head>
     <body>
+        <!-- The main page -->
         {% if message %}
             <p>{{ message }}</p>
         {% endif %}
         {% if user.is_authenticated %}
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
-                <button type="submit">Logout</button>
+                <button type="submit">تسجيل خروج</button>
             </form>
-            <p>welcome {{ user.username }}</p>
+            <p>مرحباً {{ user.username }}</p>
         {% else %}
-            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'register' %}">انشاء حساب</a>
         {% endif %}
-
+        
         {% block body %}
+        <a href="{% url 'gallery' %}"> المعرض </a>
         {% endblock %}
 
     </body>
-    
 </html>
