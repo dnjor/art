@@ -15,6 +15,7 @@ def logout(request):
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
+        
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data["password"])
@@ -28,8 +29,6 @@ def register(request):
                 "message": "حدث خطأ في انشاء الحساب",
                 "form": form
             })
+
     return render(request, "account/register.html", {
         "form": RegisterForm()})
-
-#create a reposter in github and push the code and name it
-#finish the login and logout fuctions and create the templates for them

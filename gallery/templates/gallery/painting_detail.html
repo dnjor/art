@@ -1,0 +1,31 @@
+{% extends "account/index.html" %}
+
+{% block title %} {{ painting.title }} {% endblock %}
+
+{% block body %}
+    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
+    <h2> {{painting.title}} </h2>
+        <img src="{{ painting.picture.url }}" alt="{{ painting.title }}">
+        <p> {{painting.description}} </p>
+
+        <form method="post" action="{% url 'add_like' painting.id %}">
+            {% csrf_token %}
+            <button type="submit">أعجبني</button>
+            <span> {{ likes_count }} </span>
+        </form>
+
+    <h3>اضافة تعليق</h3>
+    <form method="post" action="{% url 'add_comment' painting.id %}">
+        {% csrf_token %}
+        <textarea name="comment"placeholder="..."></textarea>
+        <button type="submit">اضافة تعليق</button>
+    </form>
+
+    {% for comment in comments %}
+        <label> {{ comment.user.username}}: </label>
+            <p> {{ comment.comment }} </p>
+    {% endfor %}
+
+<a href="{% url 'gallery' %}"> العودة الى المعرض</a>
+
+{% endblock %}

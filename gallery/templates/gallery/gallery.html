@@ -8,15 +8,27 @@
     {% if user.is_staff %}
         <a href="{% url 'uplode_painting' %}"> رفع لوحة </a>
     {% endif  %}
+
+    {% for message in messages %}
+        <p style="color: rgb(200, 255, 0);">{{ message }}</p>
+    {% endfor %}
+    
+    <!--display paintings-->
     {% if painting %}
         {% for paint in painting %}
+        <a href="{% url 'painting_detail' paint.id %}">
             <h3> {{paint.title}} </h3>
             <img src="{{ paint.picture.url }}" alt="{{ paint.title }}">
             <p> {{paint.description}} </p>
+
+            {% if user.is_staff %}
+                <a href="{% url 'edit_painting' paint.id %}"> تحديث </a>
+                <a href="{% url 'delete_painting' paint.id %}"> حذف </a>
+            {% endif %}
+        </a>
             {% endfor %}
     {% else %}
         <p>لا توجد أعمال فنية متاحة حالياً.</p>
     {% endif %}
 
-    
 {% endblock %}

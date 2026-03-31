@@ -1,27 +1,29 @@
 {% extends "account/index.html" %}
 
-{% block title %}رفع اللوحة{% endblock %}
+{% block title %}
+    تحديث لوحة
+{% endblock %}
 
 {% block body %}
-    <a href="{% url 'index' %}">الصفحة الرئيسية</a>
+    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
     <a href="{% url 'gallery' %}"> المعرض </a>
     {% for message in messages %}
         <p style="color: rgb(200, 255, 0);">{{ message }}</p>
     {% endfor %}
 
-    <!-- upload painting page -->
-    <h2>رفع اللوحة</h2>
+    <!-- edit painting form -->
+    <h1>تحديث لوحة</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="title">العنوان:</label>
-        <input type="text" name="title" id="title">
+        <input type="text" name="title" id="title" value="{{ painting.title }}">
         <br>
         <label for="painting">اللوحة:</label>
-        <input type="file" name="painting" id="painting" >
+        <input type="file" name="painting" id="painting">
         <br>
         <label for="description">الوصف:</label>
-        <textarea name="description" id="description"></textarea>
+        <textarea name="description" id="description">{{ painting.description }}</textarea>
         <br>
-        <button type="submit">رفع</button>
+        <button type="submit">تحديث</button>
     </form>
 {% endblock %}
