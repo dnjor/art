@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Painting, Comments, Likes
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .forms import PaintingForm, CommentForm
 
 
 def gallery(request):
@@ -20,28 +21,20 @@ def uplode_painting(request):
         return redirect("index")
 
     if request.method == "POST":
-        title = request.POST.get("title", "").strip()
-        picture = request.FILES.get("painting")
-        description = request.POST.get("description")
+        form = PaintingForm(request.POST, request.FILES)
 
-        if not title or not picture:
+        if not form.is_valid():
             messages.error(request, "العنوان والصورة مطلوبان")
             return redirect("uplode_painting")
 
-        painting = Painting.objects.create(
-            title=title,
-            picture=picture,
-            description=description
-            )
-        if painting:
-            painting.save()
-            messages.success(request, "تم رفع اللوحة بنجاح")
-            return redirect("gallery")
-        else:
-            messages.error(request, "حدث خطأ في رفع اللوحة")
-            return redirect("uplode_painting")
+        painting = form.save()
+        messages.success(request, "تم رفع اللوحة بنجاح")
+        return redirect("gallery")
 
-    return render(request, "gallery/uplode.html")
+    form = PaintingForm()
+    return render(request, "gallery/uplode.html", {
+        "form": form
+    })
 
 @login_required
 def edit_painting(request, painting_id):
@@ -52,24 +45,19 @@ def edit_painting(request, painting_id):
     painting = get_object_or_404(Painting, id=painting_id)
 
     if request.method == "POST":
-        title = request.POST.get("title", "").strip()
-        picture = request.FILES.get("painting")
-        description = request.POST.get("description")
+        form = PaintingForm(request.POST, request.FILES, instance=painting)
 
-        if not title:
+        if not form.is_valid():
             messages.error(request, "العنوان مطلوب")
-            return redirect("edit_painting", painting_id=painting.id)
+            return redirect("edit_painting")
 
-        painting.title = title
-        painting.description = description
-        if picture:
-            painting.picture = picture
-
-        painting.save()
+        form.save()
         messages.success(request, "تم تحديث اللوحة بنجاح")
         return redirect("gallery")
 
+    form = PaintingForm(instance=painting)
     return render(request, "gallery/edit.html", {
+        "form": form,
         "painting": painting
     })
 
@@ -90,30 +78,30 @@ def delete_painting(request, painting_id):
 @login_required
 def add_comment(request, painting_id):
     """add comment function for paintings"""
-    if request.method == "POST":
-        painting = get_object_or_404(Painting, id=painting_id)
-        comment = request.POST.get("comment", "").strip()
+    painting = get_object_or_404(Painting, id=painting_id)
 
-        if comment:
-            comment = Comments.objects.create(
-                user=request.user,
-                painting=painting,
-                comment=comment
-                )
-            messages.success(request, "تم اضافة التعليق بنجاح")
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.painting = painting
+            comment.save()
+            messages.success(request, "تم إضافة التعليق بنجاح")
         else:
             messages.error(request, "التعليق لا يمكن ان يكون فارغ")
 
-        return redirect("painting_detail", painting_id=painting_id)
+    return redirect("painting_detail", painting_id=painting_id)
 
 
 @login_required
 def add_like(request, painting_id):
     """"like and unlike function for paintings"""
-    if request.method == "POST":
-        painting = get_object_or_404(Painting, id=painting_id)
-        user = request.user
+    painting = get_object_or_404(Painting, id=painting_id)
+    user = request.user
 
+    if request.method == "POST":
         like = Likes.objects.filter(user=user, painting=painting)
 
         if like.exists():

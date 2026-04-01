@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>إنشاء ورشة عمل</title>
+    </head>
+    <body>
+        <h1>إنشاء ورشة عمل</h1>
+
+        <p><a href="{% url 'workshop_list' %}">عرض ورش العمل المتاحة</a></p>
+
+        <form action="{% url 'create_workshop' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">إنشاء</button>
+        </form>
+    </body>
+</html>

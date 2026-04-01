@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>ورش العمل</title>
+    </head>
+    <body>
+        <h1>ورش العمل</h1>
+
+        {% if user.is_authenticated %}
+            <p><a href="{% url 'create_workshop' %}">انشاء ورشة عمل</a></p>
+        {% endif %}
+
+        {% if workshops %}
+            {% for workshop in workshops %}
+                <div>
+                    <h2>{{ workshop.title }}</h2>
+
+                    {% if workshop.image %}
+                        <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="250">
+                    {% endif %}
+
+                    <p>{{ workshop.description }}</p>
+                    <p>التاريخ: {{ workshop.date }}</p>
+                    <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
+                    <p>السعر: {{ workshop.cost }}</p>
+                    <p>عدد الجلسات: {{ workshop.sessions }}</p>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>لا توجد ورش عمل متاحه حالياََ</p>
+        {% endif %}
+    </body>
+</html>
