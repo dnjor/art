@@ -1,13 +1,19 @@
 from django import forms
 
-from .models import Workshop
+from .models import Workshop, Registration
 
 
 class WorkshopForm(forms.ModelForm):
-    date = forms.DateTimeField(
+    start_date = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
         input_formats=["%Y-%m-%dT%H:%M"],
-        label="التاريخ",
+        label="تاريخ البداية",
+    )
+    end_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        input_formats=["%Y-%m-%dT%H:%M"],
+        label="تاريخ النهاية",
+        required=False,
     )
     deadline = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
@@ -21,12 +27,14 @@ class WorkshopForm(forms.ModelForm):
             "title",
             "image",
             "description",
-            "date",
+            "start_date",
+            "end_date",
             "deadline",
             "cost",
             "sessions",
             "seats",
             "zoom_link",
+            "status",
         ]
         labels = {
             "title": "العنوان",
@@ -36,7 +44,29 @@ class WorkshopForm(forms.ModelForm):
             "sessions": "عدد الجلسات",
             "seats": "عدد المقاعد",
             "zoom_link": "رابط زوم",
+            "status": "الحالة",
         }
         widgets = {
             "description": forms.Textarea(attrs={"rows": 5}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        deadline = cleaned_data.get("deadline")
+
+        if start_date and end_date and end_date < start_date:
+            self.add_error("end_date", "تاريخ النهاية يجب أن يكون بعد تاريخ البداية")
+
+        if start_date and deadline and deadline > start_date:
+            self.add_error("deadline", "آخر موعد للتسجيل يجب أن يكون قبل بداية الورشة")
+
+        return cleaned_data
+
+
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = ["payment_proof"]
+        labels = {"payment_proof": "إثبات الدفع"}

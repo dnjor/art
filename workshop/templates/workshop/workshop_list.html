@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
         <title>ورش العمل</title>
@@ -7,29 +7,40 @@
     <body>
         <h1>ورش العمل</h1>
 
-        {% if user.is_authenticated %}
-            <p><a href="{% url 'create_workshop' %}">انشاء ورشة عمل</a></p>
+        <p><a href="{% url 'index' %}">الصفحة الرئيسية</a></p>
+        <p><a href="{% url 'gallery' %}">المعرض</a></p>
+
+        {% if user.is_authenticated and user.is_staff %}
+            <p><a href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a></p>
         {% endif %}
 
         {% if workshops %}
             {% for workshop in workshops %}
                 <div>
-                    <h2>{{ workshop.title }}</h2>
+                    <a href="{% url 'workshop_detail' workshop.id %}">
+                        <h2>{{ workshop.title }}</h2>
+                    </a>
 
                     {% if workshop.image %}
-                        <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="250">
+                        <a href="{% url 'workshop_detail' workshop.id %}">
+                            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="250">
+                        </a>
                     {% endif %}
 
-                    <p>{{ workshop.description }}</p>
-                    <p>التاريخ: {{ workshop.date }}</p>
-                    <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
-                    <p>السعر: {{ workshop.cost }}</p>
-                    <p>عدد الجلسات: {{ workshop.sessions }}</p>
+                    <p>الحالة: {{ workshop.get_status_display }}</p>
+
+                    {% if workshop.status == "open" %}
+                        <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
+                    {% endif %}
+
+                    {% if user.is_authenticated and user.is_staff %}
+                        <p><a href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a></p>
+                    {% endif %}
                 </div>
                 <hr>
             {% endfor %}
         {% else %}
-            <p>لا توجد ورش عمل متاحه حالياََ</p>
+            <p>لا توجد ورش عمل حالياً.</p>
         {% endif %}
     </body>
 </html>

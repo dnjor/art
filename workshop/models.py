@@ -3,6 +3,13 @@ from django.db import models
 
 
 class Workshop(models.Model):
+    STATUS_CHOICES = [
+        ("open", "متاح للتسجيل"),
+        ("closed", "مغلقة"),
+        ("ended", "منتهية"),
+        ("cancelled", "ملغية"),
+    ]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -11,12 +18,14 @@ class Workshop(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to="workshops/")
     description = models.TextField()
-    date = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(blank=True, null=True)
     deadline = models.DateTimeField()
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     seats = models.PositiveIntegerField(blank=True, null=True)
     sessions = models.PositiveIntegerField()
     zoom_link = models.URLField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

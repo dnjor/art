@@ -7,6 +7,9 @@
     <body>
         <h1>إنشاء ورشة عمل</h1>
 
+        
+        <p><a href="{% url 'index' %}">الصفحه الرئيسيه</a></p>
+        <p><a href="{% url 'gallery' %}">المعرض</a></p>
         <p><a href="{% url 'workshop_list' %}">عرض ورش العمل المتاحة</a></p>
 
         <form action="{% url 'create_workshop' %}" method="post" enctype="multipart/form-data">

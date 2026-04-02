@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>المسجلون في الورشة</title>
+    </head>
+    <body>
+        <h1>المسجلون في ورشة: {{ workshop.title }}</h1>
+
+        <p><a href="{% url 'workshop_detail' workshop.id %}">العودة إلى تفاصيل الورشة</a></p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if registrations %}
+            {% for registration in registrations %}
+                <div>
+                    <h2>{{ registration.user.username }}</h2>
+
+                    <!-- Show the contact data here so the artist can reach the student if needed. -->
+                    <p>البريد الإلكتروني: {{ registration.user.email }}</p>
+                    <p>حالة الدفع: {{ registration.get_payment_status_display }}</p>
+                    <p>تاريخ التسجيل: {{ registration.created_at }}</p>
+
+                    {% if registration.payment_proof %}
+                        <p>
+                            <a href="{{ registration.payment_proof.url }}" target="_blank">عرض إثبات الدفع</a>
+                        </p>
+                        <img src="{{ registration.payment_proof.url }}" alt="إثبات الدفع" width="250">
+                    {% else %}
+                        <p>لم يتم رفع إثبات دفع.</p>
+                    {% endif %}
+
+                    <!-- These buttons let the artist review each registration without leaving this page. -->
+                    <p>
+                        <a href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
+                        |
+                        <a href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
+                    </p>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>
+        {% endif %}
+    </body>
+</html>

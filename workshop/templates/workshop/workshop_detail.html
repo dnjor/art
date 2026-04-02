@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ workshop.title }}</title>
+    </head>
+    <body>
+        <h1>{{ workshop.title }}</h1>
+
+        <p><a href="{% url 'workshop_list' %}">العودة إلى ورش العمل</a></p>
+
+        {% if workshop.image %}
+            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="300">
+        {% endif %}
+
+        {% if workshop.status == "open" %}
+            <a href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
+        {% else %}
+            <p>الحالة: {{ workshop.get_status_display }}</p>
+        {% endif %}
+
+        <p>{{ workshop.description }}</p>
+        <p>تاريخ البداية: {{ workshop.start_date }}</p>
+        <p>تاريخ النهاية: {{ workshop.end_date|default:"غير محدد" }}</p>
+        <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
+        <p>السعر: {{ workshop.cost }}</p>
+        <p>عدد الجلسات: {{ workshop.sessions }}</p>
+        <p>عدد المقاعد: {{ workshop.seats|default:"غير محدد" }}</p>
+
+        {% if user.is_authenticated and user.is_staff %}
+            <p><a href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a></p>
+            <p><a href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a></p>
+        {% endif %}
+    </body>
+</html>
