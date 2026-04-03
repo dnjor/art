@@ -1,13 +1,14 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
-
-from .forms import WorkshopForm, RegistrationForm
-from .models import Registration, Workshop
+from django.contrib import messages # For showing success or error messages to the user
+from django.contrib.auth.decorators import login_required # To restrict access to certain views to only logged-in users
+from django.shortcuts import get_object_or_404, redirect, render 
+from django.utils import timezone # To handle date and time, especially for checking workshop deadlines
+from django.core.mail import send_mail # For sending emails to users when their payment proof is confirmed or rejected
+from .forms import WorkshopForm, RegistrationForm 
+from .models import Registration, Workshop 
 
 
 def close_expired_workshops():
+    """This function checks for workshops that have passed their deadline and updates their status to closed."""
     Workshop.objects.filter(
         status="open",
         deadline__lt=timezone.now(),
@@ -15,6 +16,7 @@ def close_expired_workshops():
 
 
 def workshop_list(request):
+    """Display a list of all workshops"""
     close_expired_workshops()
     workshops = Workshop.objects.order_by("start_date")
 
@@ -27,6 +29,7 @@ def workshop_list(request):
 
 @login_required
 def create_workshop(request):
+    """"Create a new workshop, only staff users can access this view"""
     if not request.user.is_staff:
         return redirect("workshop_list")
 
@@ -50,6 +53,7 @@ def create_workshop(request):
 
 @login_required
 def update_workshop(request, workshop_id):
+    """"This view allows staff users to update their workshops details"""
     if not request.user.is_staff:
         return redirect("workshop_list")
 
@@ -73,6 +77,7 @@ def update_workshop(request, workshop_id):
 
 
 def workshop_detail(request, workshop_id):
+    """Display details of the workshop"""
     close_expired_workshops()
     workshop = get_object_or_404(Workshop, id=workshop_id)
     return render(
@@ -84,6 +89,7 @@ def workshop_detail(request, workshop_id):
 
 @login_required
 def register_workshop(request, workshop_id):
+    """ This view allows users to register for a workshop by uploading a payment proof. """
     workshop = get_object_or_404(Workshop, id=workshop_id)
 
     if request.method == "POST":
@@ -110,6 +116,7 @@ def register_workshop(request, workshop_id):
 @login_required
 def workshop_registrations(request, workshop_id):
     # This page is only for staff so the artist can review one workshop at a time.
+    # update and let sending email to the user when the payment proof is confirmed or rejected.
     if not request.user.is_staff:
         return redirect("workshop_list")
 
@@ -121,10 +128,12 @@ def workshop_registrations(request, workshop_id):
         "registrations": registrations,
     })
 
+# Check both functions up and below
 
 @login_required
 def update_registration_status(request, registration_id, status):
     # Only staff can confirm or reject uploaded payment proofs.
+    # update and let sending email to the user when the payment proof is confirmed or rejected.
     if not request.user.is_staff:
         return redirect("workshop_list")
 
@@ -139,3 +148,21 @@ def update_registration_status(request, registration_id, status):
 
     messages.success(request, "تم تحديث حالة التسجيل بنجاح.")
     return redirect("workshop_registrations", workshop_id=registration.workshop.id)
+
+
+def send_email(subject, message, recipient_list):
+    """
+    Reusable function for sending emails in the project.
+
+    subject: email title
+    message: email body
+    recipient_list: list of receiver emails
+    """
+
+    send_mail(
+        subject=subject,          # Email title
+        message=message,          # Email content
+        from_email=None,          # Use DEFAULT_FROM_EMAIL from settings.py
+        recipient_list=recipient_list,   # Who will receive the email
+        fail_silently=False       # Show error if sending fails
+    )
