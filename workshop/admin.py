@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Workshop, Registration
 
-# Register your models here.
+admin.site.register(Workshop)
+admin.site.register(Registration)

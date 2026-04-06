@@ -1,29 +1,29 @@
-{% extends "account/index.html" %}
+{% extends "accounts/layout.html" %}
 
-{% block title %}
-    تحديث لوحة
-{% endblock %}
+{% block title %}تحديث لوحة{% endblock %}
 
 {% block body %}
-    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
-    <a href="{% url 'gallery' %}"> المعرض </a>
-    {% for message in messages %}
-        <p style="color: rgb(200, 255, 0);">{{ message }}</p>
-    {% endfor %}
+    <section class="auth-card stack">
+        <div>
+            <h1 class="page-title">تحديث لوحة</h1>
+            <p class="page-subtitle">قم بتعديل بيانات اللوحة الحالية دون كسر تنسيق الصفحة على الهاتف أو الحاسوب.</p>
+        </div>
 
-    <!-- edit painting form -->
-    <h1>تحديث لوحة</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="title">العنوان:</label>
-        <input type="text" name="title" id="title" value="{{ painting.title }}">
-        <br>
-        <label for="painting">اللوحة:</label>
-        <input type="file" name="painting" id="painting">
-        <br>
-        <label for="description">الوصف:</label>
-        <textarea name="description" id="description">{{ painting.description }}</textarea>
-        <br>
-        <button type="submit">تحديث</button>
-    </form>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>
+                <label for="title">العنوان</label>
+                <input type="text" name="title" id="title" value="{{ painting.title }}">
+            </p>
+            <p>
+                <label for="painting">اللوحة</label>
+                <input type="file" name="painting" id="painting">
+            </p>
+            <p>
+                <label for="description">الوصف</label>
+                <textarea name="description" id="description">{{ painting.description }}</textarea>
+            </p>
+            <button type="submit">تحديث</button>
+        </form>
+    </section>
 {% endblock %}

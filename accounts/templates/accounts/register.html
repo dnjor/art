@@ -1,0 +1,63 @@
+{% extends "accounts/layout.html" %}
+{% load socialaccount %}
+
+{% block title %}إنشاء حساب{% endblock %}
+
+{% block body %}
+    <section class="auth-card stack">
+        <div>
+            <h1 class="page-title">إنشاء حساب</h1>
+            <p class="page-subtitle">أنشئ حسابك للانضمام إلى الورش ومتابعة أحدث التحديثات الفنية بسهولة.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                    {{ form.phone_number }}
+                    {{ form.phone_number.errors }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {{ form.password.errors }}
+                </div>
+
+                <div class="field-checkbox">
+                    {{ form.notifications }}
+                    <label for="{{ form.notifications.id_for_label }}">{{ form.notifications.label }}</label>
+                    {{ form.notifications.errors }}
+                </div>
+            </div>
+
+            <div class="auth-actions">
+                <button type="submit">إنشاء الحساب</button>
+                <a class="button-link secondary" href="{% provider_login_url 'google' %}">التسجيل باستخدام Google</a>
+            </div>
+        </form>
+
+        <p class="text-muted">لديك حساب بالفعل؟ <a href="{% url 'login' %}">سجل الدخول</a></p>
+    </section>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "accounts/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div class="home-page">
+        <section class="home-section">
+            <div class="home-card mb-5">
+                <div class="row g-4 g-xl-5 align-items-center home-row">
+
+                    <div class="col-lg-5">
+                        <div class="home-visual home-visual--hero">
+                            <img class="home-image home-image--hand" src="{% static 'accounts/pic/hand2.png' %}" alt="يد تمسك فرشاة رسم">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <div class="home-copy">
+                            <h1 class="page-title mb-4">الفنانة أروى</h1>
+                            <p class="page-subtitle">
+                                رحلة فنية تجمع بين الإبداع، عرض الأعمال، ومشاركة الخبرة من خلال ورشات ملهمة ومميزة.
+                            </p>
+
+                            <div class="metric-row">
+                                <div class="metric-card">
+                                    <strong >+<span class="animation-count-up" data-target="37">0</span></strong>
+                                    <span class="text-muted">ورشات فنية منجزة</span>
+                                </div>
+                                <div class="metric-card">
+                                    <strong >+<span class="animation-count-up" data-target="256">0</span></strong>
+                                    <span class="text-muted">مشاركة في الورش الفنية</span>
+                                </div>
+                                <div class="metric-card">
+                                    <strong >+<span class="animation-count-up" data-target="32">0</span></strong>
+                                    <span class="text-muted"> لوحة في المعرض</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3 home-cta">
+                                <a class="btn btn-primary btn-lg" href="{% url 'gallery' %}">استكشف المعرض</a>
+                                <a class="btn btn-outline-primary btn-lg" href="{% url 'workshop_list' %}">تصفح الورش</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </section>
+
+        <section class="home-section">
+            <div class="home-card">
+                <div class="row g-4 g-xl-5 align-items-center home-row">
+                    
+                    <div class="col-lg-7 d-flex text-end">
+                        <div class="home-copy mx-auto">
+                            <h2 class="page-title home-section-title">عنوان القسم الثاني</h2>
+                            <p class="page-subtitle">
+                                هذا نص مؤقت يمكنك تعديله لاحقا. أضيفي هنا الفكرة الأساسية لهذا القسم أو تعريفا مختصرا
+                                يشرح المحتوى الذي تريدين إظهاره بجانب الصورة.
+                            </p>
+                            <p class="page-subtitle">
+                                يمكنك كتابة فقرة ثانية أو استبدال هذا النص بالكامل بعد الانتهاء من تنسيق الصفحة بالشكل
+                                الذي يناسبك.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="home-visual home-visual--frame">
+                            <img class="home-image home-image--framed" data-aos="fade-up" src="{% static 'accounts/pic/person1.png' %}" alt="صورة شخصية أولى">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-section">
+            <div class="home-card">
+                <div class="row g-4 g-xl-5 align-items-center home-row">
+                    <div class="col-lg-5">
+                        <div class="home-visual home-visual--soft">
+                            <img class="home-image" data-aos="fade-up" src="{% static 'accounts/pic/person2.png' %}" alt="صورة شخصية ثانية">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7  d-flex text-start">
+                        <div class="home-copy mx-auto">
+                            <h2 class="page-title home-section-title">عنوان القسم الثالث</h2>
+                            <p class="page-subtitle">
+                                هذا أيضا نص مؤقت يمكنك استبداله لاحقا. استخدمي هذا المكان لإضافة تعريف آخر، نبذة مختصرة،
+                                أو رسالة ترحيبية مرتبطة بصورة هذا القسم.
+                            </p>
+                            <p class="page-subtitle">
+                                أبقيت النص على اليمين والصورة على اليسار في كل الأقسام حتى تكون الصفحة أوضح وأكثر
+                                اتساقا أثناء التصفح.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

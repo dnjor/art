@@ -1,34 +1,47 @@
-{% extends "account/index.html" %}
+{% extends "accounts/layout.html" %}
 
-{% block title %} معرض الاعمال {% endblock %}
+{% block title %}المعرض{% endblock %}
 
 {% block body %}
-    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
-    <h1>معرض الاعمال</h1>
-    {% if user.is_staff %}
-        <a href="{% url 'uplode_painting' %}"> رفع لوحة </a>
-    {% endif  %}
-
-    {% for message in messages %}
-        <p style="color: rgb(200, 255, 0);">{{ message }}</p>
-    {% endfor %}
-    
-    <!--display paintings-->
-    {% if painting %}
-        {% for paint in painting %}
-        <a href="{% url 'painting_detail' paint.id %}">
-            <h3> {{paint.title}} </h3>
-            <img src="{{ paint.picture.url }}" alt="{{ paint.title }}">
-            <p> {{paint.description}} </p>
-
+    <section class="stack">
+        <div class="button-row">
             {% if user.is_staff %}
-                <a href="{% url 'edit_painting' paint.id %}"> تحديث </a>
-                <a href="{% url 'delete_painting' paint.id %}"> حذف </a>
+                <a class="button-link primary" href="{% url 'uplode_painting' %}">رفع لوحة جديدة</a>
             {% endif %}
-        </a>
-            {% endfor %}
-    {% else %}
-        <p>لا توجد أعمال فنية متاحة حالياً.</p>
-    {% endif %}
+        </div>
 
+        <div>
+            <h1 class="page-title">معرض الأعمال</h1>
+            <p class="page-subtitle">تصفح الأعمال الفنية المعروضة بطريقة واضحة ومريحة على جميع الأجهزة.</p>
+        </div>
+
+        {% if painting %}
+            <div class="card-grid">
+                {% for paint in painting %}
+                    <article class="content-card gallery-card">
+                        <a class="card-media" href="{% url 'painting_detail' paint.id %}">
+                            <img src="{{ paint.picture.url }}" alt="{{ paint.title }}">
+                        </a>
+                        <div class="card-body">
+                            <a href="{% url 'painting_detail' paint.id %}">
+                                <h2>{{ paint.title }}</h2>
+                            </a>
+                            <p>{{ paint.description }}</p>
+
+                            {% if user.is_staff %}
+                                <div class="button-row">
+                                    <a class="button-link secondary" href="{% url 'edit_painting' paint.id %}">تحديث</a>
+                                    <a class="button-link secondary" href="{% url 'delete_painting' paint.id %}">حذف</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="content-card">
+                <p>لا توجد أعمال فنية متاحة حالياً.</p>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}

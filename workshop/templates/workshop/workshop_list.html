@@ -1,46 +1,54 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>ورش العمل</title>
-    </head>
-    <body>
-        <h1>ورش العمل</h1>
+{% extends "accounts/layout.html" %}
 
-        <p><a href="{% url 'index' %}">الصفحة الرئيسية</a></p>
-        <p><a href="{% url 'gallery' %}">المعرض</a></p>
+{% block title %}ورش العمل{% endblock %}
 
-        {% if user.is_authenticated and user.is_staff %}
-            <p><a href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a></p>
-        {% endif %}
+{% block body %}
+    <section class="stack">
+        <div class="button-row">
+            {% if user.is_authenticated and user.is_staff %}
+                <a class="button-link primary" href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a>
+            {% endif %}
+        </div>
+
+        <div>
+            <h1 class="page-title">ورش العمل</h1>
+            <p class="page-subtitle">اعرض جميع الورش في بطاقات مرنة وسهلة التصفح على الجوال والتابلت والحاسوب.</p>
+        </div>
 
         {% if workshops %}
-            {% for workshop in workshops %}
-                <div>
-                    <a href="{% url 'workshop_detail' workshop.id %}">
-                        <h2>{{ workshop.title }}</h2>
-                    </a>
-
-                    {% if workshop.image %}
-                        <a href="{% url 'workshop_detail' workshop.id %}">
-                            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="250">
+            <div class="card-grid">
+                {% for workshop in workshops %}
+                    <article class="content-card workshop-card">
+                        <a class="card-media" href="{% url 'workshop_detail' workshop.id %}">
+                            {% if workshop.image %}
+                                <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
+                            {% endif %}
                         </a>
-                    {% endif %}
 
-                    <p>الحالة: {{ workshop.get_status_display }}</p>
+                        <div class="card-body">
+                            <a href="{% url 'workshop_detail' workshop.id %}">
+                                <h2>{{ workshop.title }}</h2>
+                            </a>
 
-                    {% if workshop.status == "open" %}
-                        <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
-                    {% endif %}
+                            <p class="button-link secondary">الحالة: {{ workshop.get_status_display }}</p>
 
-                    {% if user.is_authenticated and user.is_staff %}
-                        <p><a href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a></p>
-                    {% endif %}
-                </div>
-                <hr>
-            {% endfor %}
+                            {% if workshop.status == "open" %}
+                                <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
+                            {% endif %}
+
+                            {% if user.is_authenticated and user.is_staff %}
+                                <div class="button-row">
+                                    <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
         {% else %}
-            <p>لا توجد ورش عمل حالياً.</p>
+            <div class="content-card">
+                <p>لا توجد ورش عمل حالياً.</p>
+            </div>
         {% endif %}
-    </body>
-</html>
+    </section>
+{% endblock %}

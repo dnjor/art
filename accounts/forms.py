@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 
 from .models import Profile
 
@@ -17,7 +17,8 @@ class RegisterForm(forms.ModelForm):
         label="كلمة المرور",
         error_messages={
             "min_length": "كلمة المرور يجب أن تكون على الأقل 8 أحرف."
-        })
+        },
+    )
 
     class Meta:
         model = User
@@ -28,30 +29,27 @@ class RegisterForm(forms.ModelForm):
             "password",
             "notifications",
         ]
-
         help_texts = {
             "username": None,
         }
-
         labels = {
             "username": "اسم المستخدم",
-            "email": "البريد الإلكتروني"
+            "email": "البريد الإلكتروني",
         }
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("اسم المستخدم بالفعل مستخدم.")
+            raise forms.ValidationError("اسم المستخدم مستخدم بالفعل.")
         return username
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
         if Profile.objects.filter(phone_number=phone_number).exists():
-            raise forms.ValidationError("رقم الهاتف بالفعل مستخدم.")
+            raise forms.ValidationError("رقم الهاتف مستخدم بالفعل.")
         return phone_number
 
     def save(self, commit=True):
-        # Save the Django auth user first, then create the related profile.
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password"])
 
@@ -65,6 +63,21 @@ class RegisterForm(forms.ModelForm):
 
         return user
 
+
 class CoustmLoginForm(AuthenticationForm):
-    username = forms.CharField(label="اسم المستخدم")
-    password = forms.CharField(label="كلمة المرور", widget=forms.PasswordInput)
+    username = forms.EmailField(
+        label="البريد الإلكتروني",
+        widget=forms.EmailInput(attrs={"placeholder": "name@example.com"}),
+    )
+    password = forms.CharField(
+        label="كلمة المرور",
+        widget=forms.PasswordInput(attrs={"placeholder": "••••••••"}),
+    )
+
+    def clean(self):
+        email = self.cleaned_data.get("username")
+        if email:
+            user = User.objects.filter(email=email).first()
+            if user:
+                self.cleaned_data["username"] = user.username
+        return super().clean()

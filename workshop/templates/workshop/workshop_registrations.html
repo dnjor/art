@@ -1,50 +1,45 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>المسجلون في الورشة</title>
-    </head>
-    <body>
-        <h1>المسجلون في ورشة: {{ workshop.title }}</h1>
+{% extends "accounts/layout.html" %}
 
-        <p><a href="{% url 'workshop_detail' workshop.id %}">العودة إلى تفاصيل الورشة</a></p>
+{% block title %}المسجلون في الورشة{% endblock %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+{% block body %}
+    <section class="stack">
+        <div>
+            <h1 class="page-title">المسجلون في ورشة: {{ workshop.title }}</h1>
+            <p class="page-subtitle">مراجعة الطلبات وإثباتات الدفع من لوحة مناسبة للموبايل والكمبيوتر.</p>
+        </div>
 
         {% if registrations %}
-            {% for registration in registrations %}
-                <div>
-                    <h2>{{ registration.user.username }}</h2>
+            <div class="card-grid">
+                {% for registration in registrations %}
+                    <article class="content-card stack">
+                        <div class="stack">
+                            <h2>{{ registration.user.username }}</h2>
+                            <p><strong>البريد الإلكتروني:</strong> {{ registration.user.email }}</p>
+                            <p><strong>حالة الدفع:</strong> {{ registration.get_payment_status_display }}</p>
+                            <p><strong>تاريخ التسجيل:</strong> {{ registration.created_at }}</p>
+                        </div>
 
-                    <!-- Show the contact data here so the artist can reach the student if needed. -->
-                    <p>البريد الإلكتروني: {{ registration.user.email }}</p>
-                    <p>حالة الدفع: {{ registration.get_payment_status_display }}</p>
-                    <p>تاريخ التسجيل: {{ registration.created_at }}</p>
+                        {% if registration.payment_proof %}
+                            <div class="stack">
+                                <a href="{{ registration.payment_proof.url }}" target="_blank">عرض إثبات الدفع</a>
+                                <img src="{{ registration.payment_proof.url }}" alt="إثبات الدفع">
+                            </div>
+                        {% else %}
+                            <p>لم يتم رفع إثبات دفع.</p>
+                        {% endif %}
 
-                    {% if registration.payment_proof %}
-                        <p>
-                            <a href="{{ registration.payment_proof.url }}" target="_blank">عرض إثبات الدفع</a>
-                        </p>
-                        <img src="{{ registration.payment_proof.url }}" alt="إثبات الدفع" width="250">
-                    {% else %}
-                        <p>لم يتم رفع إثبات دفع.</p>
-                    {% endif %}
-
-                    <!-- These buttons let the artist review each registration without leaving this page. -->
-                    <p>
-                        <a href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
-                        |
-                        <a href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
-                    </p>
-                </div>
-                <hr>
-            {% endfor %}
+                        <div class="button-row">
+                            <a class="button-link primary" href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
+                            <a class="button-link secondary" href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
         {% else %}
-            <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>
+            <div class="content-card">
+                <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>
+            </div>
         {% endif %}
-    </body>
-</html>
+    </section>
+{% endblock %}

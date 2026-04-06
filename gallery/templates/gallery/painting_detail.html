@@ -1,31 +1,56 @@
-{% extends "account/index.html" %}
+{% extends "accounts/layout.html" %}
 
-{% block title %} {{ painting.title }} {% endblock %}
+{% block title %}{{ painting.title }}{% endblock %}
 
 {% block body %}
-    <a href="{% url 'index' %}"> الصفحة الرئيسية </a>
-    <h2> {{painting.title}} </h2>
-        <img src="{{ painting.picture.url }}" alt="{{ painting.title }}">
-        <p> {{painting.description}} </p>
+    <section class="stack">
+        <div class="hero">
+            <div class="stack">
+                <h1 class="page-title">{{ painting.title }}</h1>
+                <p class="page-subtitle">{{ painting.description }}</p>
+                <div class="button-row">
+                    <a class="button-link secondary" href="{% url 'gallery' %}">العودة إلى المعرض</a>
+                </div>
+            </div>
 
-        <form method="post" action="{% url 'add_like' painting.id %}">
-            {% csrf_token %}
-            <button type="submit">أعجبني</button>
-            <span> {{ likes_count }} </span>
-        </form>
+            <div class="hero-art">
+                <img src="{{ painting.picture.url }}" alt="{{ painting.title }}">
+            </div>
+        </div>
 
-    <h3>اضافة تعليق</h3>
-    <form method="post" action="{% url 'add_comment' painting.id %}">
-        {% csrf_token %}
-        <textarea name="comment"placeholder="..."></textarea>
-        <button type="submit">اضافة تعليق</button>
-    </form>
+        <section class="content-card stack">
+            <form method="post" action="{% url 'add_like' painting.id %}">
+                {% csrf_token %}
+                <div class="button-row">
+                    <button type="submit">أعجبني</button>
+                    <span class="button-link secondary">{{ likes_count }}</span>
+                </div>
+            </form>
+        </section>
 
-    {% for comment in comments %}
-        <label> {{ comment.user.username}}: </label>
-            <p> {{ comment.comment }} </p>
-    {% endfor %}
+        <section class="content-card stack">
+            <h2>إضافة تعليق</h2>
+            <form method="post" action="{% url 'add_comment' painting.id %}">
+                {% csrf_token %}
+                <p>
+                    <label for="comment">التعليق</label>
+                    <textarea id="comment" name="comment" placeholder="اكتب تعليقك هنا"></textarea>
+                </p>
+                <button type="submit">إضافة تعليق</button>
+            </form>
+        </section>
 
-<a href="{% url 'gallery' %}"> العودة الى المعرض</a>
-
+        <section class="stack">
+            {% for comment in comments %}
+                <div class="content-card">
+                    <strong>{{ comment.user.username }}</strong>
+                    <p>{{ comment.comment }}</p>
+                </div>
+            {% empty %}
+                <div class="content-card">
+                    <p>لا توجد تعليقات حتى الآن.</p>
+                </div>
+            {% endfor %}
+        </section>
+    </section>
 {% endblock %}

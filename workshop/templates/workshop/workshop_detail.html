@@ -1,35 +1,53 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>{{ workshop.title }}</title>
-    </head>
-    <body>
-        <h1>{{ workshop.title }}</h1>
+{% extends "accounts/layout.html" %}
 
-        <p><a href="{% url 'workshop_list' %}">العودة إلى ورش العمل</a></p>
+{% block title %}{{ workshop.title }}{% endblock %}
 
-        {% if workshop.image %}
-            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}" width="300">
-        {% endif %}
+{% block body %}
+    <section class="stack">
+        <div class="hero">
+            <div class="stack">
+                <span class="button-link secondary">الحالة: {{ workshop.get_status_display }}</span>
+                <h1 class="page-title">{{ workshop.title }}</h1>
+                <p class="page-subtitle">{{ workshop.description }}</p>
 
-        {% if workshop.status == "open" %}
-            <a href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
-        {% else %}
-            <p>الحالة: {{ workshop.get_status_display }}</p>
-        {% endif %}
+                <div class="button-row">
+                    <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
+                    {% if workshop.status == "open" %}
+                        <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
+                    {% endif %}
+                </div>
+            </div>
 
-        <p>{{ workshop.description }}</p>
-        <p>تاريخ البداية: {{ workshop.start_date }}</p>
-        <p>تاريخ النهاية: {{ workshop.end_date|default:"غير محدد" }}</p>
-        <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
-        <p>السعر: {{ workshop.cost }}</p>
-        <p>عدد الجلسات: {{ workshop.sessions }}</p>
-        <p>عدد المقاعد: {{ workshop.seats|default:"غير محدد" }}</p>
+            <div class="hero-art">
+                {% if workshop.image %}
+                    <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <section class="content-card detail-list">
+                <h2>تفاصيل الورشة</h2>
+                <p><strong>تاريخ البداية:</strong> {{ workshop.start_date }}</p>
+                <p><strong>تاريخ النهاية:</strong> {{ workshop.end_date|default:"غير محدد" }}</p>
+                <p><strong>آخر موعد للتسجيل:</strong> {{ workshop.deadline }}</p>
+                <p><strong>السعر:</strong> {{ workshop.cost }}</p>
+            </section>
+
+            <section class="content-card detail-list">
+                <h2>معلومات إضافية</h2>
+                <p><strong>عدد الجلسات:</strong> {{ workshop.sessions }}</p>
+                <p><strong>عدد المقاعد:</strong> {{ workshop.seats|default:"غير محدد" }}</p>
+            </section>
+        </div>
 
         {% if user.is_authenticated and user.is_staff %}
-            <p><a href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a></p>
-            <p><a href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a></p>
+            <section class="content-card">
+                <div class="button-row">
+                    <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
+                    <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a>
+                </div>
+            </section>
         {% endif %}
-    </body>
-</html>
+    </section>
+{% endblock %}
