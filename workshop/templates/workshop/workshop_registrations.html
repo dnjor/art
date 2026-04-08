@@ -16,6 +16,7 @@
                         <div class="stack">
                             <h2>{{ registration.user.username }}</h2>
                             <p><strong>البريد الإلكتروني:</strong> {{ registration.user.email }}</p>
+                            <p><strong>الهاتف:</strong> {{ registration.user.profile.phone_number }}</p>
                             <p><strong>حالة الدفع:</strong> {{ registration.get_payment_status_display }}</p>
                             <p><strong>تاريخ التسجيل:</strong> {{ registration.created_at }}</p>
                         </div>

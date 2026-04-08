@@ -24,9 +24,9 @@
                         </a>
                         <div class="card-body">
                             <a href="{% url 'painting_detail' paint.id %}">
-                                <h2>{{ paint.title }}</h2>
+                                <h2>{{ paint.title}}</h2>
                             </a>
-                            <p>{{ paint.description }}</p>
+                            <p>{{ paint.description|truncatechars:90 }}</p>
 
                             {% if user.is_staff %}
                                 <div class="button-row">

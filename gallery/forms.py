@@ -2,6 +2,7 @@ from django import forms
 from .models import Painting, Comments
 
 class PaintingForm(forms.ModelForm):
+
     class Meta:
         model = Painting
         fields = [
@@ -9,6 +10,14 @@ class PaintingForm(forms.ModelForm):
             "picture",
             "description"
         ]
+
+        widgets = {
+            'description': forms.Textarea(attrs={
+            'rows': 8,
+            'class': 'custom-textarea'
+            })
+            }
+
         labels = {
             "title": "العنوان",
             "picture": "الصورة",

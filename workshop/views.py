@@ -2,7 +2,9 @@ from django.contrib import messages # For showing success or error messages to t
 from django.contrib.auth.decorators import login_required # To restrict access to certain views to only logged-in users
 from django.shortcuts import get_object_or_404, redirect, render 
 from django.utils import timezone # To handle date and time, especially for checking workshop deadlines
-from django.core.mail import send_mail # For sending emails to users when their payment proof is confirmed or rejected
+from django.core.mail import send_mail
+
+from accounts.models import Profile # For sending emails to users when their payment proof is confirmed or rejected
 from .forms import WorkshopForm, RegistrationForm 
 from .models import Registration, Workshop 
 
@@ -121,11 +123,13 @@ def workshop_registrations(request, workshop_id):
         return redirect("workshop_list")
 
     workshop = get_object_or_404(Workshop, id=workshop_id)
-    registrations = workshop.registrations.select_related("user").order_by("-created_at")
+    registrations = workshop.registrations.select_related("user", "user__profile").order_by("-created_at")
 
     return render(request, "workshop/workshop_registrations.html", {
         "workshop": workshop,
         "registrations": registrations,
+        #we want the phone number apper
+        #there a bug with the workshop it do not update after the workshop close
     })
 
 # Check both functions up and below

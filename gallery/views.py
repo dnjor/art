@@ -27,7 +27,7 @@ def uplode_painting(request):
             messages.error(request, "العنوان والصورة مطلوبان")
             return redirect("uplode_painting")
 
-        painting = form.save()
+        form.save()
         messages.success(request, "تم رفع اللوحة بنجاح")
         return redirect("gallery")
 
@@ -49,7 +49,7 @@ def edit_painting(request, painting_id):
 
         if not form.is_valid():
             messages.error(request, "العنوان مطلوب")
-            return redirect("edit_painting")
+            return redirect("edit_painting", painting_id=painting_id)
 
         form.save()
         messages.success(request, "تم تحديث اللوحة بنجاح")
@@ -119,10 +119,16 @@ def painting_detail(request, painting_id):
     painting = get_object_or_404(Painting, id=painting_id)
     likes = Likes.objects.filter(painting=painting)
     comments = Comments.objects.filter(painting=painting).order_by("-created_at")
+    user_liked = False
+
+    if request.user.is_authenticated:
+        user_liked = likes.filter(user=request.user).exists()
 
     return render(request, "gallery/painting_detail.html", {
         "painting": painting,
         "comments": comments,
-        "likes_count": likes.count()
+        "likes_count": likes.count(),
+        "comments_count": comments.count(),
+        "user_liked": user_liked
     })
 

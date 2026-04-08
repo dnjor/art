@@ -161,8 +161,8 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 STATIC_URL = 'static/'
 
 LOGIN_URL = "/account/login/"
-LOGIN_REDIRECT_URL = "/accounts/"
-LOGOUT_REDIRECT_URL = "/accounts/"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

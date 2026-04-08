@@ -3,54 +3,76 @@
 {% block title %}{{ painting.title }}{% endblock %}
 
 {% block body %}
-    <section class="stack">
-        <div class="hero">
-            <div class="stack">
-                <h1 class="page-title">{{ painting.title }}</h1>
-                <p class="page-subtitle">{{ painting.description }}</p>
-                <div class="button-row">
+    <section class="painting-detail-page stack">
+        <section class="painting-detail-hero">
+            <article class="painting-info-card content-card">
+                <div class="painting-info-copy">
+                    <span class="pill painting-detail-pill">تفاصيل اللوحة</span>
+                    <h1 class="page-title painting-detail-title">{{ painting.title }}</h1>
+                    <p class="painting-detail-description">
+                        {{ painting.description|default:"لا يوجد وصف لهذه اللوحة حتى الآن." }}
+                    </p>
+                </div>
+
+                <div class="painting-stats">
+                    <div class="metric-card painting-stat-card">
+                        <span>الإعجابات</span>
+                        <strong>{{ likes_count }}</strong>
+                    </div>
+                </div>
+
+                <div class="painting-detail-actions">
+                    <form class="painting-like-form" method="post" action="{% url 'add_like' painting.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="{% if user_liked %}button secondary{% else %}button primary{% endif %}">
+                            {% if user_liked %}إزالة الإعجاب{% else %}أعجبني{% endif %}
+                        </button>
+                    </form>
                     <a class="button-link secondary" href="{% url 'gallery' %}">العودة إلى المعرض</a>
                 </div>
-            </div>
+            </article>
 
-            <div class="hero-art">
-                <img src="{{ painting.picture.url }}" alt="{{ painting.title }}">
-            </div>
-        </div>
-
-        <section class="content-card stack">
-            <form method="post" action="{% url 'add_like' painting.id %}">
-                {% csrf_token %}
-                <div class="button-row">
-                    <button type="submit">أعجبني</button>
-                    <span class="button-link secondary">{{ likes_count }}</span>
+            <article class="painting-stage" aria-label="صورة اللوحة">
+                <div class="painting-frame">
+                    <img src="{{ painting.picture.url }}" alt="{{ painting.title }}">
                 </div>
-            </form>
+            </article>
         </section>
 
-        <section class="content-card stack">
-            <h2>إضافة تعليق</h2>
-            <form method="post" action="{% url 'add_comment' painting.id %}">
-                {% csrf_token %}
-                <p>
-                    <label for="comment">التعليق</label>
-                    <textarea id="comment" name="comment" placeholder="اكتب تعليقك هنا"></textarea>
-                </p>
-                <button type="submit">إضافة تعليق</button>
-            </form>
-        </section>
+        <section class="painting-comments content-card stack">
+            <div class="painting-comments-head">
+                <div class="stack">
+                    <h2 class="painting-comments-title">التعليقات</h2>
+                    <p class="painting-comments-subtitle">أضيفي رأيك حول اللوحة بشكل جميل وواضح.</p>
+                </div>
+            </div>
 
-        <section class="stack">
-            {% for comment in comments %}
-                <div class="content-card">
-                    <strong>{{ comment.user.username }}</strong>
-                    <p>{{ comment.comment }}</p>
+            <form class="comment-form-layout" method="post" action="{% url 'add_comment' painting.id %}">
+                {% csrf_token %}
+                <div class="form-field">
+                    <label for="comment">إضافة تعليق</label>
+                    <textarea id="comment" name="comment" placeholder="اكتبي تعليقك هنا"></textarea>
                 </div>
-            {% empty %}
-                <div class="content-card">
-                    <p>لا توجد تعليقات حتى الآن.</p>
+                <div class="button-row comment-form-actions">
+                    <button type="submit" class="button primary">إضافة تعليق</button>
                 </div>
-            {% endfor %}
+            </form>
+
+            <div class="comment-list">
+                {% for comment in comments %}
+                    <article class="comment-card">
+                        <div class="comment-card-head">
+                            <strong>{{ comment.user.username }}</strong>
+                            <span>{{ comment.created_at|date:"d / m / Y" }}</span>
+                        </div>
+                        <p>{{ comment.comment }}</p>
+                    </article>
+                {% empty %}
+                    <div class="comment-empty-state">
+                        <p>لا توجد تعليقات حتى الآن. كوني أول من يشارك رأيه.</p>
+                    </div>
+                {% endfor %}
+            </div>
         </section>
     </section>
 {% endblock %}

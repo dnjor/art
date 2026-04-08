@@ -27,20 +27,22 @@
 
                         <div class="card-body">
                             <a href="{% url 'workshop_detail' workshop.id %}">
-                                <h2>{{ workshop.title }}</h2>
+                                <h2>{{ workshop.title|truncatechars:17 }}</h2>
                             </a>
 
                             <p class="button-link secondary">الحالة: {{ workshop.get_status_display }}</p>
 
-                            {% if workshop.status == "open" %}
-                                <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
-                            {% endif %}
+                            <div class="button-row">
+                                {% if workshop.status == "open" %}
+                                    <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
+                                {% endif %}
 
-                            {% if user.is_authenticated and user.is_staff %}
-                                <div class="button-row">
-                                    <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
-                                </div>
-                            {% endif %}
+                                {% if user.is_authenticated and user.is_staff %}
+                                    <div class="button-row">
+                                        <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </article>
                 {% endfor %}

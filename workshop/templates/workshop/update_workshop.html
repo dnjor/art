@@ -28,8 +28,7 @@
 
                 <div class="form-field">
                     <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
-                    {{ form.image }}
-                    {{ form.image.errors }}
+                    <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}">
                 </div>
 
                 <div class="form-field form-field--full">

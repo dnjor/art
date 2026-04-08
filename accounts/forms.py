@@ -67,7 +67,7 @@ class RegisterForm(forms.ModelForm):
 class CoustmLoginForm(AuthenticationForm):
     username = forms.EmailField(
         label="البريد الإلكتروني",
-        widget=forms.EmailInput(attrs={"placeholder": "name@example.com"}),
+        widget=forms.EmailInput(attrs={"placeholder": "name@example.com", "required": False}),
     )
     password = forms.CharField(
         label="كلمة المرور",
@@ -75,9 +75,12 @@ class CoustmLoginForm(AuthenticationForm):
     )
 
     def clean(self):
-        email = self.cleaned_data.get("username")
+        email = self.cleaned_data.get("email")
         if email:
-            user = User.objects.filter(email=email).first()
-            if user:
-                self.cleaned_data["username"] = user.username
+            user = User.objects.filter(email__iexact=email).first()
+            if not user:
+                raise forms.ValidationError("لا يوجد مستخدم بهذا البريد الإلكتروني")
+
+            self.cleaned_data["username"] = user.username
+
         return super().clean()

@@ -4,46 +4,95 @@
 
 {% block body %}
     <section class="stack">
-        <div class="hero">
-            <div class="stack">
-                <span class="button-link secondary">الحالة: {{ workshop.get_status_display }}</span>
-                <h1 class="page-title">{{ workshop.title }}</h1>
-                <p class="page-subtitle">{{ workshop.description }}</p>
+        <div class="row g-4 g-xl-5 align-items-center">
+            <div class="col-12 col-lg-5">
+                <article class="content-card d-grid gap-4 h-100">
+                    <div class="d-grid gap-3">
+                        <span class="pill painting-detail-pill">الحالة: {{ workshop.get_status_display }}</span>
+                        <h1 class="page-title mb-0">{{ workshop.title }}</h1>
+                        <p class="page-subtitle mb-0">{{ workshop.description }}</p>
+                    </div>
 
-                <div class="button-row">
-                    <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
-                    {% if workshop.status == "open" %}
-                        <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
+                    <div class="row row-cols-1 row-cols-sm-2 g-3">
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>تاريخ البداية</strong>
+                                <span class="text-muted">{{ workshop.start_date|date:"d / m / Y - H:i" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>تاريخ النهاية</strong>
+                                <span class="text-muted">
+                                    {% if workshop.end_date %}
+                                        {{ workshop.end_date|date:"d / m / Y - H:i" }}
+                                    {% else %}
+                                        غير محدد
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>آخر موعد للتسجيل</strong>
+                                <span class="text-muted">{{ workshop.deadline|date:"d / m / Y - H:i" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>السعر</strong>
+                                <span class="text-muted">{{ workshop.cost }} ر.س</span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>عدد الجلسات</strong>
+                                <span class="text-muted">{{ workshop.sessions }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="metric-card h-100">
+                                <strong>عدد المقاعد</strong>
+                                <span class="text-muted">{{ workshop.seats|default:"غير محدد" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if workshop.zoom_link %}
+                        <div class="metric-card">
+                            <strong>رابط الورشة</strong>
+                            <a href="{{ workshop.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ workshop.zoom_link }}</a>
+                        </div>
                     {% endif %}
+
+                    <div class="d-flex flex-wrap gap-3">
+                        <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
+                        {% if workshop.status == "open" %}
+                            <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
+                        {% endif %}
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-lg-7">
+                <div class="painting-stage">
+                    <div class="painting-frame">
+                        {% if workshop.image %}
+                            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-
-            <div class="hero-art">
-                {% if workshop.image %}
-                    <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="card-grid">
-            <section class="content-card detail-list">
-                <h2>تفاصيل الورشة</h2>
-                <p><strong>تاريخ البداية:</strong> {{ workshop.start_date }}</p>
-                <p><strong>تاريخ النهاية:</strong> {{ workshop.end_date|default:"غير محدد" }}</p>
-                <p><strong>آخر موعد للتسجيل:</strong> {{ workshop.deadline }}</p>
-                <p><strong>السعر:</strong> {{ workshop.cost }}</p>
-            </section>
-
-            <section class="content-card detail-list">
-                <h2>معلومات إضافية</h2>
-                <p><strong>عدد الجلسات:</strong> {{ workshop.sessions }}</p>
-                <p><strong>عدد المقاعد:</strong> {{ workshop.seats|default:"غير محدد" }}</p>
-            </section>
         </div>
 
         {% if user.is_authenticated and user.is_staff %}
-            <section class="content-card">
-                <div class="button-row">
+            <section class="content-card d-grid gap-3">
+                <div class="d-flex flex-wrap gap-3">
                     <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
                     <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a>
                 </div>

@@ -2,102 +2,136 @@
 {% load static %}
 
 {% block body %}
-    <div class="home-page">
-        <section class="home-section">
-            <div class="home-card mb-5">
-                <div class="row g-4 g-xl-5 align-items-center home-row">
+<div class="home-page">
+    <section class="home-section">
+        <div class="home-card mb-5">
+            <div class="row g-4 g-xl-5 align-items-center home-row">
 
-                    <div class="col-lg-5">
-                        <div class="home-visual home-visual--hero">
-                            <img class="home-image home-image--hand" src="{% static 'accounts/pic/hand2.png' %}" alt="يد تمسك فرشاة رسم">
-                        </div>
+                <div class="col-lg-5">
+                    <div class="home-visual home-visual--hero">
+                        <img class="home-image home-image--hand" src="{% static 'accounts/pic/hand2.png' %}"
+                            alt="يد تمسك فرشاة رسم">
                     </div>
+                </div>
 
-                    <div class="col-lg-7">
-                        <div class="home-copy">
-                            <h1 class="page-title mb-4">الفنانة أروى</h1>
-                            <p class="page-subtitle">
-                                رحلة فنية تجمع بين الإبداع، عرض الأعمال، ومشاركة الخبرة من خلال ورشات ملهمة ومميزة.
-                            </p>
+                <div class="col-lg-7">
+                    <div class="home-copy">
+                        <h1 class="page-title mb-4">الفنانة أروى</h1>
+                        <p class="page-subtitle">
+                            رحلة فنية تجمع بين الإبداع، عرض الأعمال، ومشاركة الخبرة من خلال ورشات ملهمة ومميزة.
+                        </p>
 
-                            <div class="metric-row">
-                                <div class="metric-card">
-                                    <strong >+<span class="animation-count-up" data-target="37">0</span></strong>
-                                    <span class="text-muted">ورشات فنية منجزة</span>
-                                </div>
-                                <div class="metric-card">
-                                    <strong >+<span class="animation-count-up" data-target="256">0</span></strong>
-                                    <span class="text-muted">مشاركة في الورش الفنية</span>
-                                </div>
-                                <div class="metric-card">
-                                    <strong >+<span class="animation-count-up" data-target="32">0</span></strong>
-                                    <span class="text-muted"> لوحة في المعرض</span>
-                                </div>
+                        <div class="metric-row">
+                            <div class="metric-card">
+                                <strong>+<span class="animation-count-up" data-target="37">0</span></strong>
+                                <span class="text-muted">ورشات فنية منجزة</span>
                             </div>
-
-                            <div class="d-flex flex-wrap gap-3 home-cta">
-                                <a class="btn btn-primary btn-lg" href="{% url 'gallery' %}">استكشف المعرض</a>
-                                <a class="btn btn-outline-primary btn-lg" href="{% url 'workshop_list' %}">تصفح الورش</a>
+                            <div class="metric-card">
+                                <strong>+<span class="animation-count-up" data-target="256">0</span></strong>
+                                <span class="text-muted">مشاركة في الورش الفنية</span>
+                            </div>
+                            <div class="metric-card">
+                                <strong>+<span class="animation-count-up" data-target="32">0</span></strong>
+                                <span class="text-muted"> لوحة في المعرض</span>
                             </div>
                         </div>
-                    </div>
 
-                    
-                </div>
-            </div>
-        </section>
-
-        <section class="home-section">
-            <div class="home-card">
-                <div class="row g-4 g-xl-5 align-items-center home-row">
-                    
-                    <div class="col-lg-7 d-flex text-end">
-                        <div class="home-copy mx-auto">
-                            <h2 class="page-title home-section-title">عنوان القسم الثاني</h2>
-                            <p class="page-subtitle">
-                                هذا نص مؤقت يمكنك تعديله لاحقا. أضيفي هنا الفكرة الأساسية لهذا القسم أو تعريفا مختصرا
-                                يشرح المحتوى الذي تريدين إظهاره بجانب الصورة.
-                            </p>
-                            <p class="page-subtitle">
-                                يمكنك كتابة فقرة ثانية أو استبدال هذا النص بالكامل بعد الانتهاء من تنسيق الصفحة بالشكل
-                                الذي يناسبك.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="home-visual home-visual--frame">
-                            <img class="home-image home-image--framed" data-aos="fade-up" src="{% static 'accounts/pic/person1.png' %}" alt="صورة شخصية أولى">
+                        <div class="d-flex flex-wrap gap-3 home-cta">
+                            <a class="button-link primary" href="{% url 'gallery' %}">استكشف المعرض</a>
+                            <a class="button-link secondary" href="{% url 'workshop_list' %}">تصفح الورش</a>
                         </div>
                     </div>
                 </div>
+
+
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="home-section">
-            <div class="home-card">
-                <div class="row g-4 g-xl-5 align-items-center home-row">
-                    <div class="col-lg-5">
-                        <div class="home-visual home-visual--soft">
-                            <img class="home-image" data-aos="fade-up" src="{% static 'accounts/pic/person2.png' %}" alt="صورة شخصية ثانية">
-                        </div>
+    <section class="home-section">
+        <div class="home-card">
+            <div class="row g-4 g-xl-5 align-items-center home-row">
+
+                <div class="col-lg-7 d-flex text-end">
+                    <div class="home-copy mx-auto">
+                        <h2 class="page-title home-section-title">مين هي اروى؟</h2>
+                        <p class="page-subtitle">
+                            روى فنانة تشكيلية ترى في الفن مساحة صادقة للتعبير عن الإحساس والجمال والهوية. ومن خلال
+                            أعمالها، تسعى إلى تقديم تجربة بصرية لا تقف عند حدود الشكل، بل تحمل معنى ولمسة خاصة تظهر في
+                            تفاصيل كل عمل تقدمه. وبالنسبة لها، لا يُعد الفن مجرد ممارسة إبداعية، بل لغة تعبّر عمّا قد
+                            تعجز الكلمات عن وصفه
+                        </p>
                     </div>
+                </div>
 
-                    <div class="col-lg-7  d-flex text-start">
-                        <div class="home-copy mx-auto">
-                            <h2 class="page-title home-section-title">عنوان القسم الثالث</h2>
-                            <p class="page-subtitle">
-                                هذا أيضا نص مؤقت يمكنك استبداله لاحقا. استخدمي هذا المكان لإضافة تعريف آخر، نبذة مختصرة،
-                                أو رسالة ترحيبية مرتبطة بصورة هذا القسم.
-                            </p>
-                            <p class="page-subtitle">
-                                أبقيت النص على اليمين والصورة على اليسار في كل الأقسام حتى تكون الصفحة أوضح وأكثر
-                                اتساقا أثناء التصفح.
-                            </p>
-                        </div>
+                <div class="col-lg-5">
+                    <div class="home-visual home-visual--frame">
+                        <img class="home-image home-image--framed" data-aos="fade-up"
+                            src="{% static 'accounts/pic/person1.png' %}" alt="صورة شخصية أولى">
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
+
+    <section class="home-section">
+        <div class="home-card">
+            <div class="row g-4 g-xl-5 align-items-center home-row">
+                <div class="col-lg-5">
+                    <div class="home-visual home-visual--soft">
+                        <img class="home-image" data-aos="fade-up" src="{% static 'accounts/pic/mother_son.jpg' %}"
+                            alt="لوحة فنية لأم وابنها">
+                    </div>
+                </div>
+
+                <div class="col-lg-7  d-flex text-start">
+                    <div class="home-copy mx-auto">
+                        <h2 class="page-title home-section-title">رؤيتها الفنية</h2>
+                        <p class="page-subtitle">
+                            تتميّز أعمال أروى باهتمام واضح بالتفاصيل، وحضور بصري يجمع بين الإحساس الإنساني والهوية
+                            الفنية الخاصة. وتميل في أعمالها إلى تقديم لوحات تحمل توازنًا بين الجمال والعمق والتعبير، مما
+                            يمنح كل عمل طابعًا فريدًا وبصمة يمكن تمييزها بسهولة. ومن خلال هذا الأسلوب، تقدّم أروى رؤية
+                            فنية تسعى إلى ملامسة المتلقي بصريًا ووجدانيًا في الوقت نفسه
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section">
+        <div class="home-card">
+            <div class="row g-4 g-xl-5 align-items-center home-row">
+
+                <div class="col-lg-7 d-flex text-end">
+                    <div class="home-copy mx-auto">
+                        <h2 class="page-title home-section-title">مسيرتها الفنية</h2>
+                        <p class="page-subtitle">
+                            إلى جانب تجربتها الفنية، تُعرَف أروى بأنها مدرّبة معتمدة في الفنون التشكيلية والحرفية，
+                            وعضو سابق في مؤسسة مشروع رسام. كما ارتبط اسمها بمشاركات فنية ومعارض من أبرزها معرض
+                            <strong><a
+                                    href="https://www.al-madina.com/article/767873/%D8%AB%D9%82%D8%A7%D9%81%D8%A9/%D9%87%D9%85%D8%B3%D8%A7%D8%AA-%D9%84%D9%88%D9%86%D9%8A%D8%A9-60-%D9%84%D9%88%D8%AD%D8%A9-%D9%81%D9%86%D9%8A%D8%A9-%D9%84%D9%84%D8%AA%D8%B4%D9%83%D9%8A%D9%84%D9%8A%D8%A9-%D8%A7%D9%84%D8%B8%D9%8A%D9%81%D9%8A">همسات
+                                    لونية</a></strong> في جدة,
+                            الذي ضم 60 عملًا فنيًا من أعمالها. ويعكس ذلك حضورًا فنيًا قائمًا على الاستمرار، وتطوير
+                            التجربة، والمشاركة الفاعلة في المشهد الفني.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="home-visual home-visual--frame div-gallery-container">
+                        <img class="home-image home-image--framed image-loop active" data-aos="fade-up"
+                            src="{% static 'accounts/pic/gallery1.jpg' %}" alt="gallery1">
+                        <img class="home-image home-image--framed image-loop" data-aos="fade-up"
+                            src="{% static 'accounts/pic/gallery2.jpg' %}" alt="gallery2">
+                        <img class="home-image home-image--framed image-loop" data-aos="fade-up"
+                            src="{% static 'accounts/pic/gallery3.jpg' %}" alt="gallery3">
+                        <img class="home-image home-image--framed image-loop" data-aos="fade-up"
+                            src="{% static 'accounts/pic/gallery4.jpg' %}" alt="gallery4">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
