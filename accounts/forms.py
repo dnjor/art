@@ -43,6 +43,12 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("اسم المستخدم مستخدم بالفعل.")
         return username
 
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("البريد الإلكتروني مستخدم بالفعل.")
+        return email
+
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
         if Profile.objects.filter(phone_number=phone_number).exists():
@@ -51,6 +57,7 @@ class RegisterForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.email = (self.cleaned_data.get("email") or "").strip()
         user.set_password(self.cleaned_data["password"])
 
         if commit:
@@ -67,20 +74,23 @@ class RegisterForm(forms.ModelForm):
 class CoustmLoginForm(AuthenticationForm):
     username = forms.EmailField(
         label="البريد الإلكتروني",
-        widget=forms.EmailInput(attrs={"placeholder": "name@example.com", "required": False}),
+        widget=forms.EmailInput(attrs={"placeholder": "name@example.com"}),
     )
     password = forms.CharField(
         label="كلمة المرور",
-        widget=forms.PasswordInput(attrs={"placeholder": "••••••••"}),
+        widget=forms.PasswordInput(attrs={"placeholder": "********"}),
     )
 
     def clean(self):
-        email = self.cleaned_data.get("email")
-        if email:
-            user = User.objects.filter(email__iexact=email).first()
-            if not user:
-                raise forms.ValidationError("لا يوجد مستخدم بهذا البريد الإلكتروني")
+        email = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
 
+        if email and password:
+            try:
+                user = User.objects.get(email__iexact=email)
+                
+            except User.DoesNotExist:
+                raise forms.ValidationError("لا يوجد مستخدم بهذا البريد الإلكتروني.")
+            
             self.cleaned_data["username"] = user.username
-
         return super().clean()

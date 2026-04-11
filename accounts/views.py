@@ -1,8 +1,12 @@
-from django.contrib.auth import logout
-from django.shortcuts import redirect, render
-from .forms import RegisterForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+
+from .forms import RegisterForm, CoustmLoginForm
 from .models import Profile
+from gallery.models import Painting
+from workshop.models import Workshop, Registration
 
 
 def index(request):
@@ -10,15 +14,40 @@ def index(request):
         response = check_google_login(request)
         if response:
             return response
-    
-    return render(request, "accounts/index.html")
+
+        
+    return render(request, "accounts/index.html",
+    {
+        "painting": Painting.objects.filter(is_active=True).count(),
+        "workshop": Workshop.objects.filter(status="ended").count() + 30 ,
+        "registers": Registration.objects.filter(payment_status="confirmed").count() + 250 ,
+    })
+
 
 def login(request):
-    return render(request, "accounts/login.html")
+    if request.method == "POST":
+        form = CoustmLoginForm(request=request, data=request.POST)
 
+        if form.is_valid():
+            auth_login(request, form.get_user())
+            return redirect("index")
 
-def logout(request):
-    logout(request)
+        return render(
+            request,
+            "accounts/login.html",
+            {
+                "message": "خطأ في تسجيل الدخول. يرجى التحقق من البريد الإلكتروني وكلمة المرور.",
+                "form": form,
+            },
+        )
+
+    return render(
+        request,
+        "accounts/login.html",
+        {
+            "form": CoustmLoginForm(request=request),
+        },
+    )
 
 
 def register(request):
@@ -26,20 +55,43 @@ def register(request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            # The form now creates both the User and the Profile for us.
             user = form.save()
-            return render(request, "accounts/index.html", {
-                "message": "تم انشاء الحساب بالنجاح",
-                "user": user
-            })
-        else:
-            return render(request, "accounts/register.html", {
-                "message": "حدث خطأ في انشاء الحساب",
-                "form": form
-            })
+            authenticated_user = authenticate(
+                request,
+                username=user.username,
+                password=form.cleaned_data["password"],
+            )
 
-    return render(request, "accounts/register.html", {
-        "form": RegisterForm()})
+            if authenticated_user is not None:
+                auth_login(request, authenticated_user)
+                messages.success(request, "تم إنشاء الحساب بنجاح.")
+                return redirect("index")
+
+            return render(
+                request,
+                "accounts/register.html",
+                {
+                    "message": "تم إنشاء الحساب ولكن لم يتم تسجيل الدخول تلقائياً.",
+                    "form": RegisterForm(),
+                },
+            )
+
+        return render(
+            request,
+            "accounts/register.html",
+            {
+                "message": "حدث خطأ في إنشاء الحساب",
+                "form": form,
+            },
+        )
+
+    return render(
+        request,
+        "accounts/register.html",
+        {
+            "form": RegisterForm(),
+        },
+    )
 
 
 def login_by_google(user):
@@ -71,50 +123,54 @@ def check_google_login(request):
     user.save()
 
     profile, created = Profile.objects.get_or_create(
-        user=user,
+        user=request.user,
         defaults={
             "phone_number": "",
             "notifications": True,
-        }
+        },
     )
 
-    if not profile.phone_number:
-        return redirect("login_incomplete")
+    if not user.profile.phone_number:
+        return redirect("accounts:login_incomplete")
 
     return None
 
 
 @login_required
 def login_incomplete(request):
-    profile, created = Profile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            "phone_number": "",
-            "notifications": True,
-        }
-    )
-
     if request.method == "POST":
         phone_number = request.POST.get("phone_number")
         notifications = request.POST.get("notifications") == "on"
 
         if Profile.objects.filter(phone_number=phone_number).exists():
-            return render(request, "accounts/login_incomplete.html", {
-                "message": "رقم الهاتف هذا مستخدم بالفعل. يرجى استخدام رقم هاتف آخر.",
-                "user": request.user
-            })
-
+            return render(
+                request,
+                "accounts/login_incomplete.html",
+                {
+                    "message": "رقم الهاتف هذا مستخدم بالفعل. يرجى استخدام رقم هاتف آخر.",
+                    "user": request.user,
+                },
+            )
+        
+        profile = Profile.objects.get(user=request.user)
         profile.phone_number = phone_number
         profile.notifications = notifications
         profile.save()
 
-        return render(request, "accounts/index.html", {
-            "message": "تم تحديث رقم الهاتف بنجاح.",
-            "user": request.user
-        })
+        return render(
+            request,
+            "accounts/index.html",
+            {
+                "message": "تم تحديث رقم الهاتف بنجاح.",
+                "user": request.user,
+            },
+        )
 
-    return render(request, "accounts/login_incomplete.html", {
-        "message": "يرجى إكمال تسجيل الدخول بإضافة رقم هاتفك.",
-        "user": request.user
-    })
-
+    return render(
+        request,
+        "accounts/login_incomplete.html",
+        {
+            "message": "يرجى إكمال تسجيل الدخول بإضافة رقم هاتفك.",
+            "user": request.user,
+        },
+    )

@@ -9,7 +9,7 @@
             <p class="page-subtitle">نحتاج إلى بعض التفاصيل الإضافية لإكمال حسابك وتأمين التواصل بخصوص الورش والمدفوعات.</p>
         </div>
 
-        <form method="post" action="{% url 'login_incomplete' %}">
+        <form method="post" action="{% url 'accounts:login_incomplete' %}">
             {% csrf_token %}
             <div class="form-grid">
                 <div class="form-field form-field--full">
