@@ -66,7 +66,10 @@ def register(request):
         if form.is_valid():
             user = form.save()
 
-            send_verification_email(request, user)
+            try:
+                send_verification_email(request, user)
+            except Exception as e:
+                print("Email Error:", e)
 
             messages.success(request, "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.")
             return redirect("accounts:login")
