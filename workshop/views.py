@@ -25,7 +25,9 @@ def workshop_list(request):
     return render(
         request,
         "workshop/workshop_list.html",
-        {"workshops": workshops},
+        {
+            "workshops": workshops
+        },
     )
 
 
@@ -37,10 +39,35 @@ def create_workshop(request):
 
     if request.method == "POST":
         form = WorkshopForm(request.POST, request.FILES)
+
         if form.is_valid():
-            workshop = form.save(commit=False)
-            workshop.user = request.user
-            workshop.save()
+            workshop_detail = form.save(commit=False)
+            workshop_detail.user = request.user
+            workshop_detail = form.save()
+
+            users = Profile.objects.filter(notifications=True).select_related('user')
+
+            subject = f"ورشة عمل جديدة: {workshop_detail.title}"
+
+            message = f""" مرحباً {users.first().user.username}!
+
+            تم إضافة ورشة عمل جديدة
+
+            {workshop_detail.title} عنوان الورشة:
+
+            يمكنك زيارة الموقع للاطلاع على تفاصيل كاملة والتسجيل:
+            http://arwa-art.onrender.com/workshop/{workshop_detail.id}/
+
+            مع خالص التحية,
+            منصة اروى الفنية
+            """
+
+            send_email(
+                subject,
+                message,
+                [user.user.email for user in users]
+            )
+
             messages.success(request, "تم إنشاء الورشة بنجاح")
             return redirect("workshop_list")
     else:
@@ -49,7 +76,9 @@ def create_workshop(request):
     return render(
         request,
         "workshop/create_workshop.html",
-        {"form": form},
+        {
+            "form": form
+        },
     )
 
 
@@ -74,7 +103,10 @@ def update_workshop(request, workshop_id):
     return render(
         request,
         "workshop/update_workshop.html",
-        {"form": form, "workshop": workshop},
+        {
+            "form": form,
+            "workshop": workshop
+        },
     )
 
 
@@ -82,11 +114,14 @@ def workshop_detail(request, workshop_id):
     """Display details of the workshop"""
     close_expired_workshops()
     workshop = get_object_or_404(Workshop, id=workshop_id)
+
     return render(
         request,
-        "workshop/workshop_detail.html", {
-        "workshop": workshop
-    })
+        "workshop/workshop_detail.html", 
+        {
+            "workshop": workshop
+        }
+    )
 
 
 @login_required
@@ -102,50 +137,95 @@ def register_workshop(request, workshop_id):
             registration.user = request.user
             registration.workshop = workshop
             registration.save()
+            
+            request.user.profile.notifications = True  # Enable notifications for the user when they register for a workshop, so they can receive updates about their registration status.
+            request.user.profile.save()
+
             messages.success(request, 
-            "تم رفع إثبات الدفع بنجاح، سيتم مراجعة طلبك قريبًا")
+            "تم رفع إثبات الدفع بنجاح، سيتم مراجعة طلبك قريبًا, واعلامك عبر البريد الإلكتروني")
             return redirect("workshop_detail", workshop_id=workshop.id)
         else:
             messages.error(request,
             "حدث خطأ في رفع إثبات الدفع، يرجى المحاولة مرة أخرى")
 
-    return render(request, "workshop/register_workshop.html", {
-        "workshop": workshop,
-        "form": RegistrationForm()
-        })
+    return render(
+        request,
+        "workshop/register_workshop.html",
+        {
+            "workshop": workshop,
+            "form": RegistrationForm()
+        }
+    )
 
 
 @login_required
 def workshop_registrations(request, workshop_id):
     # This page is only for staff so the artist can review one workshop at a time.
-    # update and let sending email to the user when the payment proof is confirmed or rejected.
     if not request.user.is_staff:
         return redirect("workshop_list")
 
     workshop = get_object_or_404(Workshop, id=workshop_id)
     registrations = workshop.registrations.select_related("user", "user__profile").order_by("-created_at")
 
-    return render(request, "workshop/workshop_registrations.html", {
-        "workshop": workshop,
-        "registrations": registrations,
-        #we want the phone number apper
-        #there a bug with the workshop it do not update after the workshop close
-    })
+    return render(
+        request,
+        "workshop/workshop_registrations.html",
+        {
+            "workshop": workshop,
+            "registrations": registrations,
+        }
+    )
 
-# Check both functions up and below
 
 @login_required
 def update_registration_status(request, registration_id, status):
     # Only staff can confirm or reject uploaded payment proofs.
-    # update and let sending email to the user when the payment proof is confirmed or rejected.
     if not request.user.is_staff:
         return redirect("workshop_list")
 
     registration = get_object_or_404(Registration, id=registration_id)
 
-    if status not in ["confirmed", "rejected"]:
-        messages.error(request, "حالة الدفع غير صحيحة.")
-        return redirect("workshop_registrations", workshop_id=registration.workshop.id)
+    if status == "confirmed":
+        subject = f" تحديث بخصوص طلبك في ورشة العمل: {registration.workshop.title}"
+
+        message = f""" مرحباً {registration.user.username}!
+
+        يسرنا أبلاغك بانه تمت الموافقة على طلب تسجيلك في ورشة عمل
+
+        يمكنك زيارة الموقع للاطلاع على تفاصيل الورشة ومتابعة اي تحديثات متعلقة بها:
+        http://arwa-art.onrender.com/workshop/{registration.workshop.id}/
+
+        مع خالص التحية,
+        منصة اروى الفنية
+        """
+
+        send_email(
+            subject,
+            message,
+            [registration.user.email]
+        )
+
+    elif status == "rejected":
+        subject = f" تحديث بخصوص طلبك في ورشة العمل: {registration.workshop.title}"
+
+        message = f""" مرحباً {registration.user.username}!
+
+        نأسف لإبلاغك بانه تم رفض طلب تسجيلك في ورشة عمل
+
+        للاعتراض زور الموقع وتواصل معنا عبر تطبيق الواتساب مع ذكر اسم الورشة التي قدمت لها، وسنقوم بمراجعة طلبك مرة أخرى.
+
+        رابط الموقع:
+        http://arwa-art.onrender.com
+
+        مع خالص التحية,
+        منصة اروى الفنية
+        """
+
+        send_email(
+            subject,
+            message,
+            [registration.user.email]
+        )
 
     registration.payment_status = status
     registration.save()
@@ -155,14 +235,6 @@ def update_registration_status(request, registration_id, status):
 
 
 def send_email(subject, message, recipient_list):
-    """
-    Reusable function for sending emails in the project.
-
-    subject: email title
-    message: email body
-    recipient_list: list of receiver emails
-    """
-
     send_mail(
         subject=subject,          # Email title
         message=message,          # Email content
@@ -170,3 +242,4 @@ def send_email(subject, message, recipient_list):
         recipient_list=recipient_list,   # Who will receive the email
         fail_silently=False       # Show error if sending fails
     )
+

@@ -12,7 +12,7 @@
 
         <div>
             <h1 class="page-title">ورش العمل</h1>
-            <p class="page-subtitle">اعرض جميع الورش في بطاقات مرنة وسهلة التصفح على الجوال والتابلت والحاسوب.</p>
+            <p class="page-subtitle">استعرض الورش الفنية الحالية والسابقة, وتعرف على التجارب التعلمية التي قدمتها الفنانة وطريقة المشاركة في الورش المتاحة</p>
         </div>
 
         {% if workshops %}
@@ -29,8 +29,12 @@
                             <a href="{% url 'workshop_detail' workshop.id %}">
                                 <h2>{{ workshop.title|truncatechars:17 }}</h2>
                             </a>
-
-                            <p class="button-link secondary">الحالة: {{ workshop.get_status_display }}</p>
+                            
+                            {% if workshop.status == "open" %}
+                                <p class="button-link primary">الحالة: {{ workshop.get_status_display }}</p>
+                            {% else %}
+                                <p class="button-link secondary">الحالة: {{ workshop.get_status_display }}</p>
+                            {% endif %}
 
                             <div class="button-row">
                                 {% if workshop.status == "open" %}

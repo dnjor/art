@@ -1,7 +1,16 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+
+# libary for checking email
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from workshop.views import send_email
 
 from .forms import RegisterForm, CoustmLoginForm
 from .models import Profile
@@ -56,34 +65,21 @@ def register(request):
 
         if form.is_valid():
             user = form.save()
-            authenticated_user = authenticate(
-                request,
-                username=user.username,
-                password=form.cleaned_data["password"],
-            )
 
-            if authenticated_user is not None:
-                auth_login(request, authenticated_user)
-                messages.success(request, "تم إنشاء الحساب بنجاح.")
-                return redirect("index")
+            send_verification_email(request, user)
 
+            messages.success(request, "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.")
+            return redirect("accounts:login")
+        
+        else:
             return render(
                 request,
                 "accounts/register.html",
                 {
-                    "message": "تم إنشاء الحساب ولكن لم يتم تسجيل الدخول تلقائياً.",
-                    "form": RegisterForm(),
+                    "message": "خطأ في التسجيل. يرجى التحقق من البيانات المدخلة.",
+                    "form": form,
                 },
             )
-
-        return render(
-            request,
-            "accounts/register.html",
-            {
-                "message": "حدث خطأ في إنشاء الحساب",
-                "form": form,
-            },
-        )
 
     return render(
         request,
@@ -100,14 +96,17 @@ def login_by_google(user):
 
     if social_account and social_account.provider == "google":
         extra_data = social_account.extra_data
+
         email = extra_data.get("email")
         username = extra_data.get("given_name")
+        
         return email, username
 
     return None, None
 
 
 def check_google_login(request):
+    """check if the user login with google or not"""
     user = request.user
     email, username = login_by_google(user)
 
@@ -138,6 +137,7 @@ def check_google_login(request):
 
 @login_required
 def login_incomplete(request):
+    """ Handle the case when a user logged in with google"""
     if request.method == "POST":
         phone_number = request.POST.get("phone_number")
         notifications = request.POST.get("notifications") == "on"
@@ -174,3 +174,66 @@ def login_incomplete(request):
             "user": request.user,
         },
     )
+
+def send_verification_email(request, user):
+    # Create encoded user id
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+    # Create secure one-time token
+    token = default_token_generator.make_token(user)
+
+    # Build activation URL
+    activation_url = request.build_absolute_uri(
+        reverse("accounts:activate_account", kwargs={"uidb64": uidb64, "token": token})
+    )
+
+    # Email subject
+    subject = "Verify your email address"
+
+    # Plain text email body
+    message = f"""
+اهلااً {user.username},
+
+شكرا لك على التسجيل.
+
+من فضلك اضغط على الرابط التالي لتأكيد بريدك الإلكتروني:
+
+{activation_url}
+
+اذا لم تقم بإنشاء هذا الحساب، يمكنك تجاهل هذا البريد الإلكتروني.
+"""
+
+    # Send email
+    send_email(
+        subject,
+        message,
+        [user.email],
+    )
+
+def activate_account(request, uidb64, token):
+    User = get_user_model()
+
+    try:
+        # Decode the user id from the URL
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    # Validate token
+    if user is not None and default_token_generator.check_token(user, token):
+        # Activate account
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+
+        messages.success(
+            request,
+            "تم تفعيل حسابك بنجاح. يمكنك الآن تسجيل الدخول."
+        )
+        return redirect("accounts:login")
+
+    messages.error(
+        request,
+        " الرابط غير صحيح أو انتهت صلاحيته."
+    )
+    return redirect("accounts:register")

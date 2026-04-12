@@ -8,7 +8,11 @@
             <div class="col-12 col-lg-5">
                 <article class="content-card d-grid gap-4 h-100">
                     <div class="d-grid gap-3">
-                        <span class="pill painting-detail-pill">الحالة: {{ workshop.get_status_display }}</span>
+                        {% if workshop.status == "open" %}
+                            <span class="pill painting-detail-pill button-link primary">{{ workshop.get_status_display }}</span>
+                        {% else %}
+                            <span class="pill painting-detail-pill button-link secondary">{{ workshop.get_status_display }}</span>
+                        {% endif %}
                         <h1 class="page-title mb-0">{{ workshop.title }}</h1>
                         <p class="page-subtitle mb-0">{{ workshop.description }}</p>
                     </div>

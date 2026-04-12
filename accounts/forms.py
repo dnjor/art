@@ -60,6 +60,8 @@ class RegisterForm(forms.ModelForm):
         user.email = (self.cleaned_data.get("email") or "").strip()
         user.set_password(self.cleaned_data["password"])
 
+        user.is_active = False  # Deactivate account until email confirmation
+
         if commit:
             user.save()
             Profile.objects.create(
