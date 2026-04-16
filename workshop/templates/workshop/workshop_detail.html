@@ -99,6 +99,9 @@
                 <div class="d-flex flex-wrap gap-3">
                     <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
                     <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a>
+                    {% if workshop.status == "ended" %}
+                        <a class="button-link secondary" href="{% url 'send_link_review' workshop.id %}">ارسال رابط تقييم للمشاركين</a>
+                    {% endif %}
                 </div>
             </section>
         {% endif %}

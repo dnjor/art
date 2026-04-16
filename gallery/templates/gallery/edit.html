@@ -6,10 +6,13 @@
     <section class="auth-card stack">
         <div>
             <h1 class="page-title">تحديث لوحة</h1>
-            <p class="page-subtitle">قم بتعديل بيانات اللوحة الحالية دون كسر تنسيق الصفحة على الهاتف أو الحاسوب.</p>
         </div>
 
-        <form method="post" enctype="multipart/form-data">
+        <form
+            action="{% url 'edit_painting' painting.id %}"
+            method="post"
+            enctype="multipart/form-data"
+        >
             {% csrf_token %}
             {% if form.non_field_error %}
                 <ul class="errorlist">
@@ -18,6 +21,7 @@
                     {% endfor %}
                 </ul>
             {% endif %}
+
             <div class="form-grid">
                 <div class="form-field">
                     <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
@@ -27,15 +31,23 @@
 
                 <div class="form-field">
                     <label for="{{ form.picture.id_for_label }}">{{ form.picture.label }}</label>
-                    <input type="file" name="{{ form.picture.name }}" id="{{ form.picture.id_for_label }}">
+                    {% if painting.picture %}
+                        <div class="stack">
+                            <img src="{{ painting.picture.url }}" alt="{{ painting.title }}" style="max-width: 220px; border-radius: 16px;">
+                            <small>اتركي هذا الحقل فارغاً إذا كنتِ لا تريدين تغيير الصورة الحالية.</small>
+                        </div>
+                    {% endif %}
+                    {{ form.picture }}
+                    {{ form.picture.errors }}
                 </div>
-
             </div>
-                <div class="form-field">
-                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                    {{ form.description }}
-                    {{ form.description.errors }}
-                </div>
+
+            <div class="form-field">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+                {{ form.description.errors }}
+            </div>
+
             <button type="submit">تحديث</button>
         </form>
     </section>

@@ -19,6 +19,14 @@ from django.urls import path, include
 from accounts import views
 from django.conf import settings
 from django.conf.urls.static import static
+from gallery.api_views import (
+    PaintingDetaiAPIView,
+    PaintingListAPIView,
+)
+from workshop.api_views import (
+    WorkshopListAPIView,
+    WorkshopDetaiAPIView,
+)
 
 
 urlpatterns = [
@@ -27,7 +35,14 @@ urlpatterns = [
     path("gallery/", include("gallery.urls")),
     path("workshop/", include("workshop.urls")),
     path("accounts/", include("allauth.urls")),
-    path("", views.index, name="index")
+    path("reviews/", include("reviews.urls")),
+    path("", views.index, name="index"),
+
+    path("api/gallery/", PaintingListAPIView.as_view(), name="api-gallery-list"),
+    path("api/gallery/<int:pk>/", PaintingDetaiAPIView.as_view(), name="api-gallery-detail"),
+
+    path("api/workshop/", WorkshopListAPIView.as_view(), name="api-workshop-list"),
+    path("api/workshop/<int:pk>/",  WorkshopDetaiAPIView.as_view(), name="api-workshop-detail"),
 ]
 
 if settings.DEBUG:

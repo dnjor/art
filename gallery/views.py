@@ -9,15 +9,10 @@ from accounts.models import Profile
 
 def gallery(request):
     """show all paintings in the gallery"""
-    painting = Painting.objects.filter(is_active=True)
 
     return render(
         request,
         "gallery/gallery.html",
-        {
-            "painting": painting,
-            "user": request.user
-        }
     )
 
 @login_required
@@ -37,24 +32,27 @@ def uplode_painting(request):
 
         users = Profile.objects.filter(notifications=True).select_related('user')
 
-        subject = f"لوحة جديدة في المعرض: {painting.title}"
+        for user in users:
 
-        message = f""" مرحباً {users.first().user.username}!
+            subject = f"لوحة جديدة في المعرض: {painting.title}"
 
-        تم إضافة لوحة جديدة بعنوان  "{painting.title}" إلى معرضنا الفني. 
+            message = f""" مرحباً {user.user.username}!
 
-        يمكنك زيارة المعرض الآن لمشاهدة اللوحة الجديدة وترك رايك عليها:
-        http://arwa-art.onrender.com/gallery/{painting.id}/
+            تم إضافة لوحة جديدة بعنوان  "{painting.title}" إلى معرضنا الفني. 
 
-        مع خالص التحية,
-        منصة اروى الفنية
-        """
+            يمكنك زيارة المعرض الآن لمشاهدة اللوحة الجديدة وترك رايك عليها:
+            http://arwa-art.onrender.com/gallery/{painting.id}/
 
-        send_email(
-            subject,
-            message,
-            [user.user.email for user in users]
-        )
+            مع خالص التحية,
+            منصة اروى الفنية
+            """
+
+            send_email(
+                subject,
+                message,
+                [user.user.email]
+            )
+
         messages.success(request, "تم رفع اللوحة بنجاح")
         return redirect("gallery")
 

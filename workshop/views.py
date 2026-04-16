@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from accounts.models import Profile # For sending emails to users when their payment proof is confirmed or rejected
 from .forms import WorkshopForm, RegistrationForm 
 from .models import Registration, Workshop 
+from reviews.models import Review
 
 
 def close_expired_workshops():
@@ -19,15 +20,17 @@ def close_expired_workshops():
 
 def workshop_list(request):
     """Display a list of all workshops"""
-    close_expired_workshops()
-    workshops = Workshop.objects.order_by("start_date")
+    reviews = list(Review.objects.filter(status="approved").order_by("-created_at"))
+
+    for review in reviews:
+        review.star_range = range(max(int(review.average or 0), 0))
 
     return render(
         request,
         "workshop/workshop_list.html",
         {
-            "workshops": workshops
-        },
+            "reviews": reviews
+        }
     )
 
 
@@ -47,26 +50,28 @@ def create_workshop(request):
 
             users = Profile.objects.filter(notifications=True).select_related('user')
 
-            subject = f"ورشة عمل جديدة: {workshop_detail.title}"
+            for user in users:
 
-            message = f""" مرحباً {users.first().user.username}!
+                subject = f"ورشة عمل جديدة: {workshop_detail.title}"
 
-            تم إضافة ورشة عمل جديدة
+                message = f""" مرحباً {user.user.username}!
 
-            {workshop_detail.title} عنوان الورشة:
+                تم إضافة ورشة عمل جديدة
 
-            يمكنك زيارة الموقع للاطلاع على تفاصيل كاملة والتسجيل:
-            http://arwa-art.onrender.com/workshop/{workshop_detail.id}/
+                {workshop_detail.title} عنوان الورشة:
 
-            مع خالص التحية,
-            منصة اروى الفنية
-            """
+                يمكنك زيارة الموقع للاطلاع على تفاصيل كاملة والتسجيل:
+                http://arwa-art.onrender.com/workshop/{workshop_detail.id}/
 
-            send_email(
-                subject,
-                message,
-                [user.user.email for user in users]
-            )
+                مع خالص التحية,
+                منصة اروى الفنية
+                """
+
+                send_email(
+                    subject,
+                    message,
+                    [user.user.email]
+                )
 
             messages.success(request, "تم إنشاء الورشة بنجاح")
             return redirect("workshop_list")
@@ -84,7 +89,7 @@ def create_workshop(request):
 
 @login_required
 def update_workshop(request, workshop_id):
-    """"This view allows staff users to update their workshops details"""
+    """Update workshop details from the normal Django form page."""
     if not request.user.is_staff:
         return redirect("workshop_list")
 
@@ -105,21 +110,21 @@ def update_workshop(request, workshop_id):
         "workshop/update_workshop.html",
         {
             "form": form,
-            "workshop": workshop
+            "workshop": workshop,
         },
     )
 
 
 def workshop_detail(request, workshop_id):
-    """Display details of the workshop"""
+    """Render the workshop details page."""
     close_expired_workshops()
     workshop = get_object_or_404(Workshop, id=workshop_id)
 
     return render(
         request,
-        "workshop/workshop_detail.html", 
+        "workshop/workshop_detail.html",
         {
-            "workshop": workshop
+            "workshop": workshop,
         }
     )
 
@@ -183,7 +188,8 @@ def update_registration_status(request, registration_id, status):
     if not request.user.is_staff:
         return redirect("workshop_list")
 
-    registration = get_object_or_404(Registration, id=registration_id)
+    registration = get_object_or_404(Registration, id=registration_id, user=request.user)
+
 
     if status == "confirmed":
         subject = f" تحديث بخصوص طلبك في ورشة العمل: {registration.workshop.title}"
@@ -226,12 +232,40 @@ def update_registration_status(request, registration_id, status):
             message,
             [registration.user.email]
         )
-
+            
     registration.payment_status = status
     registration.save()
 
     messages.success(request, "تم تحديث حالة التسجيل بنجاح.")
     return redirect("workshop_registrations", workshop_id=registration.workshop.id)
+
+
+def send_link_review(request, workshop_id):
+    workshop = get_object_or_404(Workshop, id=workshop_id)
+    registrations = workshop.registrations.all()
+
+    for registration in registrations:
+        subject = f" شاركنا رأيك في الورشة - تقييمك يهمنا {workshop.title}"
+
+        message = f""" اهلااَ {registration.user.username}!
+
+        نود معرفة رأيك في الورشة التي حضرتها.
+        تقييمك يساعدنا على تطوير وتحسين ورشاتنا القادمة
+
+        اضغط على الرابط لتقييم الورشة:
+        {{ https://forms.gle/MLntK1YXrMZs3owUA }}
+
+        شكراَ لك
+        """
+    
+        send_email(
+            subject,
+            message,
+            [registration.user.email]
+        )
+
+    messages.success(request, "تم ارسال رابط التقييم لجميع المسجلين")
+    return redirect("workshop_list")
 
 
 def send_email(subject, message, recipient_list):
@@ -242,4 +276,3 @@ def send_email(subject, message, recipient_list):
         recipient_list=recipient_list,   # Who will receive the email
         fail_silently=False       # Show error if sending fails
     )
-

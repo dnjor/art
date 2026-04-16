@@ -3,45 +3,45 @@
 {% block title %}المعرض{% endblock %}
 
 {% block body %}
-    <section class="stack">
-        <div class="button-row">
-            {% if user.is_staff %}
-                <a class="button-link primary" href="{% url 'uplode_painting' %}">رفع لوحة جديدة</a>
-            {% endif %}
-        </div>
-
-        <div>
-            <h1 class="page-title">معرض الأعمال</h1>
-            <p class="page-subtitle">تصفح مجموعة من الاعمال الفنية المعروضة واستمتع بتفاصيل كل لوحة ولمستها الابداعية</p>
-        </div>
-
-        {% if painting %}
-            <div class="card-grid">
-                {% for paint in painting %}
-                    <article class="content-card gallery-card">
-                        <a class="card-media" href="{% url 'painting_detail' paint.id %}">
-                            <img src="{{ paint.picture.url }}" alt="{{ paint.title }}">
-                        </a>
-                        <div class="card-body">
-                            <a href="{% url 'painting_detail' paint.id %}">
-                                <h2>{{ paint.title}}</h2>
-                            </a>
-                            <p>{{ paint.description|truncatechars:90 }}</p>
-
-                            {% if user.is_staff %}
-                                <div class="button-row">
-                                    <a class="button-link secondary" href="{% url 'edit_painting' paint.id %}">تحديث</a>
-                                    <a class="button-link secondary" href="{% url 'delete_painting' paint.id %}">حذف</a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="content-card">
-                <p>لا توجد أعمال فنية متاحة حالياً.</p>
-            </div>
+<section class="stack">
+    <div class="button-row">
+        {% if user.is_staff %}
+        <a class="button-link primary" href="{% url 'uplode_painting' %}">رفع لوحة جديدة</a>
         {% endif %}
-    </section>
+    </div>
+
+    <div>
+        <h1 class="page-title">معرض الأعمال</h1>
+        <p class="page-subtitle">تصفح مجموعة من الاعمال الفنية المعروضة واستمتع بتفاصيل كل لوحة ولمستها الابداعية</p>
+    </div>
+
+    <div
+        class="card-grid gallery-container"
+        data-gallery-api-url="{% url 'api-gallery-list' %}"
+        data-detail-base-url="/gallery/painting/"
+        data-update-base-url="/gallery/update/"
+        data-delete-base-url="/gallery/delete/"
+    >
+        <template id="painting-card-template">
+            <article class="content-card gallery-card gallery-cards">
+                <a class="card-media link-painting" href="">
+                    <img class="image-painting" src="" alt="">
+                </a>
+                <div class="card-body">
+                    <a class="link-painting" href="#">
+                        <h2 class="title-painting"></h2>
+                    </a>
+                    <p class="description-painting"></p>
+                </div>
+                {% if user.is_staff %}
+                <div class="button-row">
+                    <a class="update-painting button-link secondary" href="">تحديث</a>
+                    <a class="delete-painting button-link secondary" href="">حذف</a>
+                </div>
+                {% endif %}
+            </article>
+        </template>
+    </div>
+</section>
+
 {% endblock %}

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'gallery',
     'workshop',
+    'reviews',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    "rest_framework",
 ]
 
 
@@ -163,6 +165,11 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS").lower() == "true"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT"))
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL").lower() == "true"
+
+#google sheet
+GOOGLE_SHEETS_CREDENTIALS_FILE = BASE_DIR / "credentials" / "google-service-account.json"
+GOOGLE_SHEET_ID = "1WzVQWbjMgL665i9N6gdvMVHpdUfXkL_oBeT69ibh4Ms"
+GOOGLE_SHEET_RANGE = "'ردود النموذج 1'!A:Z"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

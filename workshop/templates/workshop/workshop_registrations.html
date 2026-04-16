@@ -6,7 +6,7 @@
     <section class="stack">
         <div>
             <h1 class="page-title">المسجلون في ورشة: {{ workshop.title }}</h1>
-            <p class="page-subtitle">مراجعة الطلبات وإثباتات الدفع من لوحة مناسبة للموبايل والكمبيوتر.</p>
+            <p class="page-subtitle">مراجعة الطلبات وإثباتات الدفع.</p>
         </div>
 
         {% if registrations %}
@@ -15,9 +15,9 @@
                     <article class="content-card stack">
                         <div class="stack">
                             <h2>{{ registration.user.username }}</h2>
-                            <p><strong>البريد الإلكتروني:</strong> {{ registration.user.email }}</p>
-                            <p><strong>الهاتف:</strong> {{ registration.user.profile.phone_number }}</p>
-                            <p><strong>حالة الدفع:</strong> {{ registration.get_payment_status_display }}</p>
+                            <p><strong> البريد الاكتروني: </strong> {{  registration.user.email }}</p>
+                            <p><strong>الهاتف:</strong> {{  registration.user.profile.phone_number }}</p>
+                            <p><strong>حالة الفع:</strong> {{  registration.get_payment_status_display }}</p>
                             <p><strong>تاريخ التسجيل:</strong> {{ registration.created_at }}</p>
                         </div>
 
@@ -30,10 +30,12 @@
                             <p>لم يتم رفع إثبات دفع.</p>
                         {% endif %}
 
+                        {% if workshop.status == "open" or "closed" %}
                         <div class="button-row">
                             <a class="button-link primary" href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
                             <a class="button-link secondary" href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
                         </div>
+                        {% endif %}
                     </article>
                 {% endfor %}
             </div>

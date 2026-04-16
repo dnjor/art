@@ -6,10 +6,13 @@
     <section class="content-card upload-card stack">
         <div>
             <h1 class="page-title">تعديل ورشة عمل</h1>
-            <p class="page-subtitle">حدّث بيانات الورشة مع الحفاظ على واجهة مناسبة للهاتف والكمبيوتر.</p>
         </div>
 
-        <form action="{% url 'update_workshop' workshop.id %}" method="post" enctype="multipart/form-data">
+        <form
+            action="{% url 'update_workshop' workshop.id %}"
+            method="post"
+            enctype="multipart/form-data"
+        >
             {% csrf_token %}
             {% if form.non_field_errors %}
                 <ul class="errorlist">
@@ -28,7 +31,8 @@
 
                 <div class="form-field">
                     <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
-                    <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}">
+                    {{ form.image }}
+                    {{ form.image.errors }}
                 </div>
 
                 <div class="form-field form-field--full">
