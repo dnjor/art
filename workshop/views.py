@@ -31,13 +31,7 @@ def workshop_list(request):
     for review in reviews:
         review.star_range = range(max(int(review.average or 0), 0))
 
-    return render(
-        request,
-        "workshop/workshop_list.html",
-        {
-            "reviews": reviews
-        }
-    )
+    return render(request, "workshop/workshop_list.html", {"reviews": reviews})
 
 
 @login_required
@@ -83,9 +77,7 @@ def create_workshop(request):
     return render(
         request,
         "workshop/create_workshop.html",
-        {
-            "form": form
-        },
+        {"form": form},
     )
 
 
@@ -166,10 +158,7 @@ def register_workshop(request, workshop_id):
     return render(
         request,
         "workshop/register_workshop.html",
-        {
-            "workshop": workshop,
-            "form": RegistrationForm()
-        },
+        {"workshop": workshop, "form": RegistrationForm()},
     )
 
 
@@ -195,57 +184,67 @@ def workshop_registrations(request, workshop_id):
 
 
 @login_required
-def update_registration_status(request, registration_id, status):
+def update_registration_status(request, workshop_id, registration_user):
     """Updating by confirmed or rejected for evrey registrations"""
     if not request.user.is_staff:
         return redirect("workshop_list")
 
-    registration = get_object_or_404(
-        Registration, id=registration_id, user=request.user
-    )
+    workshop = get_object_or_404(Workshop, id=workshop_id)
+    registration = Registration.objects.get(workshop=workshop, user=registration_user)
 
-    if status == "confirmed":
-        subject = f" تحديث بخصوص طلبك في ورشة العمل: {registration.workshop.title}"
+    if request.method == "POST":
+        status = request.POST.get("status")
 
-        message = f""" مرحباً {registration.user.username}!
+        if status == "confirmed":
+            subject = f" تحديث بخصوص طلبك في ورشة العمل: {workshop.title}"
 
-        يسرنا أبلاغك بانه تمت الموافقة على طلب تسجيلك في ورشة عمل
+            message = f""" مرحباً {registration.user.username}!
 
-        يمكنك زيارة الموقع للاطلاع على تفاصيل الورشة ومتابعة اي تحديثات متعلقة بها:
-        http://arwa-art.onrender.com/workshop/{registration.workshop.id}/
+            يسرنا أبلاغك بانه تمت الموافقة على طلب تسجيلك في ورشة عمل
 
-        مع خالص التحية,
-        منصة اروى الفنية
-        """
+            يمكنك زيارة الموقع للاطلاع على تفاصيل الورشة ومتابعة اي تحديثات متعلقة بها:
+            http://arwa-art.onrender.com/workshop/{workshop.id}/
 
-        send_email(subject, message, [registration.user.email])
+            مع خالص التحية,
+            منصة اروى الفنية
+            """
 
-    elif status == "rejected":
-        subject = f" تحديث بخصوص طلبك في ورشة العمل: {registration.workshop.title}"
+            send_email(subject, message, [registration.user.email])
 
-        message = f""" مرحباً {registration.user.username}!
+        elif status == "rejected":
+            subject = f" تحديث بخصوص طلبك في ورشة العمل: {workshop.title}"
 
-        نأسف لإبلاغك بانه تم رفض طلب تسجيلك في ورشة عمل
+            message = f""" مرحباً {registration.user.username}!
 
-        للاعتراض زور الموقع وتواصل معنا عبر تطبيق الواتساب مع ذكر اسم الورشة التي قدمت لها، وسنقوم بمراجعة طلبك مرة أخرى.
+            نأسف لإبلاغك بانه تم رفض طلب تسجيلك في ورشة عمل
 
-        رابط الموقع:
-        http://arwa-art.onrender.com
+            للاعتراض زور الموقع وتواصل معنا عبر تطبيق الواتساب مع ذكر اسم الورشة التي قدمت لها، وسنقوم بمراجعة طلبك مرة أخرى.
 
-        مع خالص التحية,
-        منصة اروى الفنية
-        """
+            رابط الموقع:
+            http://arwa-art.onrender.com
 
-        send_email(subject, message, [registration.user.email])
+            مع خالص التحية,
+            منصة اروى الفنية
+            """
 
-    registration.payment_status = status
-    registration.save()
+            send_email(subject, message, [registration.user.email])
+        
+        else:
+            messages.error(request, "الرجاء تحديد حالة التسجيل بقول او الرفض.")
+            return redirect("workshop_registrations", workshop_id=workshop.id)
 
-    messages.success(request, "تم تحديث حالة التسجيل بنجاح.")
-    return redirect("workshop_registrations", workshop_id=registration.workshop.id)
+        registration.payment_status = status
+        registration.save()
+
+        messages.success(request, "تم تحديث حالة التسجيل بنجاح.")
+        return redirect("workshop_registrations", workshop_id=workshop.id)
 
 
+@login_required
 def send_link_review(request, workshop_id):
+    if not request.user.is_staff:
+        return redirect("workshop_list")
+
     registrations = Registration.objects.filter(workshop=workshop_id)
     workshop = get_object_or_404(Workshop, id=workshop_id)
 

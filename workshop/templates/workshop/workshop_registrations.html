@@ -32,25 +32,30 @@
 
             {% if workshop.status == "open" or workshop.status == "closed" %}
             <div class="button-row">
-                <a class="button-link primary"
-                    href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
-                <a class="button-link secondary"
-                    href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
+                <form method="POST" action="{% url 'update_registration_status' workshop.id registration.user.id %}">
+                    {% csrf_token %}
+                    <select name="status">
+                        <option value="" selected disabled>اختر الحالة</option>
+                        <option value="confirmed">قبول</option>
+                        <option value="rejected">رفض</option>
+                    </select>
+
+                    <button type="submit">حفظ</button>
+                </form>
             </div>
             {% endif %}
         </article>
         {% endfor %}
-
-
     </div>
 
-    <section class="content-card d-grid gap-3">
-        <div class="d-flex flex-wrap gap-3">
+    <div class="d-flex flex-wrap gap-3">
+        <a class="button-link secondary" href="{% url 'workshop_detail' workshop.id %}">العودة الى تفاصيل الورشة
+        </a>
+        {% if workshop.status != "open" and workshop.status != "closed" %}
             <p class="mt-3">انتهت الورشة لا تستطيع قبول او رفض المسجلين </P>
-            <a class="button-link secondary" href="{% url 'workshop_detail' workshop.id %}">العودة الى تفاصيل الورشة
-            </a>
-        </div>
-    </section>
+        {% endif %}
+    </div>
+
     {% else %}
     <div class="content-card">
         <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>

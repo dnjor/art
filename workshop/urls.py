@@ -20,7 +20,7 @@ urlpatterns = [
         name="send_link_review",
     ),
     path(
-        "registrations/<int:registration_id>/<str:status>/",
+        "<int:workshop_id>/registrations/<int:registration_user>/status/",
         views.update_registration_status,
         name="update_registration_status",
     ),

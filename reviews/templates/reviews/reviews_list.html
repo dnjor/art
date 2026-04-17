@@ -57,6 +57,10 @@
 
             <div class="button-row">
                 <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة للورشة</a>
+                <form method="post" action="{% url 'sync_review_from_sheet' %}">
+                    {% csrf_token %}
+                    <button type="submit">جلب اخر الاتقيمات</button>
+                </form>
             </div>
         </article>
     </div>

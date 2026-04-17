@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import Review
 
@@ -14,8 +15,6 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 def reviews_list(request):
     if not request.user.is_staff:
         return redirect("index")
-
-    import_reviews_from_sheet()  # to check if there a new review
 
     if request.method == "POST":
         review_id = request.POST.get("review_id")
@@ -30,7 +29,7 @@ def reviews_list(request):
         review.save()
 
         messages.success(request, "تم تحديث حالة التقييم بنجاح")
-        return redirect("workshop_list")
+        return redirect("reviews_list")
 
     reviews = Review.objects.all()
 
@@ -38,6 +37,15 @@ def reviews_list(request):
         review.star_range = range(max(int(review.average or 0), 0))
 
     return render(request, "reviews/reviews_list.html", {"reviews": reviews})
+
+
+@staff_member_required
+@login_required
+def sync_review_from_sheet(request):
+    """when the admin want to update the new reviews"""
+    import_reviews_from_sheet()
+    messages.success(request, "تم تحديث التقيمات")
+    return redirect("reviews_list")
 
 
 def get_raw_sheet_data():

@@ -34,7 +34,7 @@ class Review(models.Model):
     )
     average = models.DecimalField(max_digits=3, decimal_places=2, editable=False)
     comment = models.TextField(blank=True)
-    status = models.CharField(choices=STATUS_CHOICES, default="pending")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     source_timestamp = models.CharField(max_length=100, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
