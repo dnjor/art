@@ -15,9 +15,7 @@ class RegisterForm(forms.ModelForm):
         widget=forms.PasswordInput,
         min_length=8,
         label="كلمة المرور",
-        error_messages={
-            "min_length": "كلمة المرور يجب أن تكون على الأقل 8 أحرف."
-        },
+        error_messages={"min_length": "كلمة المرور يجب أن تكون على الأقل 8 أحرف."},
     )
 
     class Meta:
@@ -90,9 +88,9 @@ class CoustmLoginForm(AuthenticationForm):
         if email and password:
             try:
                 user = User.objects.get(email__iexact=email)
-                
+
             except User.DoesNotExist:
                 raise forms.ValidationError("لا يوجد مستخدم بهذا البريد الإلكتروني.")
-            
+
             self.cleaned_data["username"] = user.username
         return super().clean()

@@ -6,7 +6,6 @@ from django.shortcuts import redirect, render
 # libary for checking email
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -24,13 +23,16 @@ def index(request):
         if response:
             return response
 
-        
-    return render(request, "accounts/index.html",
-    {
-        "painting": Painting.objects.filter(is_active=True).count(),
-        "workshop": Workshop.objects.filter(status="ended").count() + 30 ,
-        "registers": Registration.objects.filter(payment_status="confirmed").count() + 250 ,
-    })
+    return render(
+        request,
+        "accounts/index.html",
+        {
+            "painting": Painting.objects.filter(is_active=True).count(),
+            "workshop": Workshop.objects.filter(status="ended").count() + 30,
+            "registers": Registration.objects.filter(payment_status="confirmed").count()
+            + 250,
+        },
+    )
 
 
 def login(request):
@@ -67,13 +69,16 @@ def register(request):
             user = form.save()
 
             try:
-                send_verification_email(request, user)
+                send_verification_email(request, user) # check if the user use his email
             except Exception as e:
                 print("Email Error:", e)
 
-            messages.success(request, "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.")
+            messages.success(
+                request,
+                "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.",
+            )
             return redirect("accounts:login")
-        
+
         else:
             return render(
                 request,
@@ -102,7 +107,7 @@ def login_by_google(user):
 
         email = extra_data.get("email")
         username = extra_data.get("given_name")
-        
+
         return email, username
 
     return None, None
@@ -140,7 +145,7 @@ def check_google_login(request):
 
 @login_required
 def login_incomplete(request):
-    """ Handle the case when a user logged in with google"""
+    """Handle the case when a user logged in with google"""
     if request.method == "POST":
         phone_number = request.POST.get("phone_number")
         notifications = request.POST.get("notifications") == "on"
@@ -154,7 +159,7 @@ def login_incomplete(request):
                     "user": request.user,
                 },
             )
-        
+
         profile = Profile.objects.get(user=request.user)
         profile.phone_number = phone_number
         profile.notifications = notifications
@@ -178,8 +183,9 @@ def login_incomplete(request):
         },
     )
 
+
 def send_verification_email(request, user):
-    # Create encoded user id
+    """Send verification to his email"""
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
     # Create secure one-time token
@@ -213,7 +219,9 @@ def send_verification_email(request, user):
         [user.email],
     )
 
+
 def activate_account(request, uidb64, token):
+    """"Check if user click the link"""
     User = get_user_model()
 
     try:
@@ -229,14 +237,8 @@ def activate_account(request, uidb64, token):
         user.is_active = True
         user.save(update_fields=["is_active"])
 
-        messages.success(
-            request,
-            "تم تفعيل حسابك بنجاح. يمكنك الآن تسجيل الدخول."
-        )
+        messages.success(request, "تم تفعيل حسابك بنجاح. يمكنك الآن تسجيل الدخول.")
         return redirect("accounts:login")
 
-    messages.error(
-        request,
-        " الرابط غير صحيح أو انتهت صلاحيته."
-    )
+    messages.error(request, " الرابط غير صحيح أو انتهت صلاحيته.")
     return redirect("accounts:register")

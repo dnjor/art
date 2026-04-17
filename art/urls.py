@@ -14,20 +14,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from accounts import views
 from django.conf import settings
 from django.conf.urls.static import static
+from gallery.api_views import (
+    PaintingDetaiAPIView,
+    PaintingListAPIView,
+)
+from workshop.api_views import (
+    WorkshopListAPIView,
+    WorkshopDetaiAPIView,
+)
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("gallery/", include("gallery.urls")),
     path("workshop/", include("workshop.urls")),
     path("accounts/", include("allauth.urls")),
-    path("", views.index, name="index")
+    path("reviews/", include("reviews.urls")),
+    path("", views.index, name="index"),
+    path("api/gallery/", PaintingListAPIView.as_view(), name="api-gallery-list"),
+    path(
+        "api/gallery/<int:pk>/",
+        PaintingDetaiAPIView.as_view(),
+        name="api-gallery-detail",
+    ),
+    path("api/workshop/", WorkshopListAPIView.as_view(), name="api-workshop-list"),
+    path(
+        "api/workshop/<int:pk>/",
+        WorkshopDetaiAPIView.as_view(),
+        name="api-workshop-detail",
+    ),
 ]
 
 if settings.DEBUG:

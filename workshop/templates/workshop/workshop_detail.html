@@ -3,104 +3,111 @@
 {% block title %}{{ workshop.title }}{% endblock %}
 
 {% block body %}
-    <section class="stack">
-        <div class="row g-4 g-xl-5 align-items-center">
-            <div class="col-12 col-lg-5">
-                <article class="content-card d-grid gap-4 h-100">
-                    <div class="d-grid gap-3">
-                        {% if workshop.status == "open" %}
-                            <span class="pill painting-detail-pill button-link primary">{{ workshop.get_status_display }}</span>
-                        {% else %}
-                            <span class="pill painting-detail-pill button-link secondary">{{ workshop.get_status_display }}</span>
-                        {% endif %}
-                        <h1 class="page-title mb-0">{{ workshop.title }}</h1>
-                        <p class="page-subtitle mb-0">{{ workshop.description }}</p>
-                    </div>
-
-                    <div class="row row-cols-1 row-cols-sm-2 g-3">
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>تاريخ البداية</strong>
-                                <span class="text-muted">{{ workshop.start_date|date:"d / m / Y - H:i" }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>تاريخ النهاية</strong>
-                                <span class="text-muted">
-                                    {% if workshop.end_date %}
-                                        {{ workshop.end_date|date:"d / m / Y - H:i" }}
-                                    {% else %}
-                                        غير محدد
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>آخر موعد للتسجيل</strong>
-                                <span class="text-muted">{{ workshop.deadline|date:"d / m / Y - H:i" }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>السعر</strong>
-                                <span class="text-muted">{{ workshop.cost }} ر.س</span>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>عدد الجلسات</strong>
-                                <span class="text-muted">{{ workshop.sessions }}</span>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="metric-card h-100">
-                                <strong>عدد المقاعد</strong>
-                                <span class="text-muted">{{ workshop.seats|default:"غير محدد" }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% if workshop.zoom_link %}
-                        <div class="metric-card">
-                            <strong>رابط الورشة</strong>
-                            <a href="{{ workshop.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ workshop.zoom_link }}</a>
-                        </div>
+<section class="stack">
+    <div class="row g-4 g-xl-5 align-items-center">
+        <div class="col-12 col-lg-5">
+            <article class="content-card d-grid gap-4 h-100">
+                <div class="d-grid gap-3">
+                    {% if workshop.status == "open" %}
+                    <span class="pill painting-detail-pill button-link primary">{{ workshop.get_status_display }}</span>
+                    {% else %}
+                    <span class="pill painting-detail-pill button-link secondary">{{ workshop.get_status_display }}</span>
                     {% endif %}
+                    <h1 class="page-title mb-0">{{ workshop.title }}</h1>
+                    <p class="page-subtitle mb-0">{{ workshop.description }}</p>
+                </div>
 
-                    <div class="d-flex flex-wrap gap-3">
-                        <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
-                        {% if workshop.status == "open" %}
-                            <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في الورشة</a>
-                        {% endif %}
+                <div class="row row-cols-1 row-cols-sm-2 g-3">
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>تاريخ البداية</strong>
+                            <span class="text-muted">{{ workshop.start_date|date:"d / m / Y - H:i" }}</span>
+                        </div>
                     </div>
-                </article>
-            </div>
 
-            <div class="col-12 col-lg-7">
-                <div class="painting-stage">
-                    <div class="painting-frame">
-                        {% if workshop.image %}
-                            <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
-                        {% endif %}
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>تاريخ النهاية</strong>
+                            <span class="text-muted">
+                                {% if workshop.end_date %}
+                                {{ workshop.end_date|date:"d / m / Y - H:i" }}
+                                {% else %}
+                                غير محدد
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
+
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>آخر موعد للتسجيل</strong>
+                            <span class="text-muted">{{ workshop.deadline|date:"d / m / Y - H:i" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>السعر</strong>
+                            <span class="text-muted">{{ workshop.cost }} ر.س</span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>عدد الجلسات</strong>
+                            <span class="text-muted">{{ workshop.sessions }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="metric-card h-100">
+                            <strong>عدد المقاعد</strong>
+                            <span class="text-muted">{{ workshop.seats|default:"غير محدد" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if workshop.zoom_link %}
+                <div class="metric-card">
+                    <strong>رابط الورشة</strong>
+                    <a href="{{ workshop.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ workshop.zoom_link
+                        }}</a>
+                </div>
+                {% endif %}
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
+                    {% if workshop.status == "open" %}
+                    <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في
+                        الورشة</a>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <div class="painting-stage">
+                <div class="painting-frame">
+                    {% if workshop.image %}
+                    <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </div>
 
-        {% if user.is_authenticated and user.is_staff %}
-            <section class="content-card d-grid gap-3">
-                <div class="d-flex flex-wrap gap-3">
-                    <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
-                    <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات الدفع</a>
-                </div>
-            </section>
-        {% endif %}
+    {% if user.is_authenticated and user.is_staff %}
+    <section class="content-card d-grid gap-3">
+        <div class="d-flex flex-wrap gap-3">
+            <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
+            <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات
+                الدفع</a>
+            {% if workshop.status == "ended" and not workshop.registration_email_sent_at %}
+            <a class="button-link secondary" href="{% url 'send_link_review' workshop.id %}">ارسال رابط تقييم
+                للمشاركين</a>
+            {% endif %}
+        </div>
     </section>
+    {% endif %}
+</section>
 {% endblock %}

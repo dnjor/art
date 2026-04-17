@@ -3,58 +3,89 @@
 {% block title %}ورش العمل{% endblock %}
 
 {% block body %}
-    <section class="stack">
-        <div class="button-row">
-            {% if user.is_authenticated and user.is_staff %}
-                <a class="button-link primary" href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a>
-            {% endif %}
-        </div>
 
-        <div>
-            <h1 class="page-title">ورش العمل</h1>
-            <p class="page-subtitle">استعرض الورش الفنية الحالية والسابقة, وتعرف على التجارب التعلمية التي قدمتها الفنانة وطريقة المشاركة في الورش المتاحة</p>
-        </div>
 
-        {% if workshops %}
-            <div class="card-grid">
-                {% for workshop in workshops %}
-                    <article class="content-card workshop-card">
-                        <a class="card-media" href="{% url 'workshop_detail' workshop.id %}">
-                            {% if workshop.image %}
-                                <img src="{{ workshop.image.url }}" alt="{{ workshop.title }}">
-                            {% endif %}
-                        </a>
+<section class="stack">
+    <div class="button-row">
+        {% if user.is_authenticated and user.is_staff %}
+        <a class="button-link primary" href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a>
+        <a class="button-link primary" href="{% url 'reviews_list' %}">عرض التقيمات</a>
 
-                        <div class="card-body">
-                            <a href="{% url 'workshop_detail' workshop.id %}">
-                                <h2>{{ workshop.title|truncatechars:17 }}</h2>
-                            </a>
-                            
-                            {% if workshop.status == "open" %}
-                                <p class="button-link primary">الحالة: {{ workshop.get_status_display }}</p>
-                            {% else %}
-                                <p class="button-link secondary">الحالة: {{ workshop.get_status_display }}</p>
-                            {% endif %}
-
-                            <div class="button-row">
-                                {% if workshop.status == "open" %}
-                                    <p>آخر موعد للتسجيل: {{ workshop.deadline }}</p>
-                                {% endif %}
-
-                                {% if user.is_authenticated and user.is_staff %}
-                                    <div class="button-row">
-                                        <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="content-card">
-                <p>لا توجد ورش عمل حالياً.</p>
-            </div>
         {% endif %}
-    </section>
+    </div>
+
+    <div>
+        <h1 class="page-title">ورش العمل</h1>
+        <p class="page-subtitle">استعرض الورش الفنية الحالية والسابقة, وتعرف على التجارب التعلمية التي قدمتها الفنانة
+            وطريقة المشاركة في الورش المتاحة</p>
+    </div>
+
+    <span id="loader" class="loader hidden"></span>
+
+    <div class="card-grid workshop-container" data-workshop-api-url="{% url 'api-workshop-list' %}"
+        data-detail-base-url="/workshop/" data-update-base-url="/workshop/update/">
+
+        <template id="workshop-card-template">
+            <article class="content-card workshop-card">
+                <a class="card-media link-workshop" href="">
+                    <img class="image-workshop" src="" alt="">
+                </a>
+
+                <div class="card-body">
+                    <a class="link-workshop" href="">
+                        <h2 class="title-workshop"></h2>
+                    </a>
+
+                    <p class="button-link status-workshop "></p>
+
+                    <div class="button-row">
+                        <p class="dead-line"></p>
+
+                        {% if user.is_authenticated and user.is_staff %}
+                        <div class="button-row">
+                            <a class="button-link secondary link-workshop-update" href="">تعديل الورشة</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        </template>
+    </div>
+</section>
+
+<section class="rate-showcase hidden" aria-label="Workshop reviews">
+    {% if reviews %}
+    <div class="rate-shell">
+
+        <div class="rate-card-track">
+            {% for review in reviews %}
+            <article class="review-loop {% if forloop.first %}active{% endif %} ">
+                <div class="stars-rate" aria-label="{{ review.average }} out of 5 stars">
+                    {% for _ in review.star_range %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="star-rate">
+                        <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                        </path>
+                    </svg>
+                    {% endfor %}
+                </div>
+
+                <div class="infos-rate">
+                    <p class="date-time-rate">{{ review.created_at|date:"M Y" }}</p>
+                    <p class="description-rate">{{ review.comment }}</p>
+                </div>
+
+                <p class="author-rate">{{ review.review_name }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="rate-dots" aria-label="Review navigation"></div>
+    {% else %}
+    <article class="card-rate card-rate-empty">
+        <p class="description-rate">لا يوجد تقييم حتى الان</p>
+    </article>
+    {% endif %}
+</section>
 {% endblock %}

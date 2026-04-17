@@ -4,52 +4,53 @@
 {% block title %}تسجيل الدخول{% endblock %}
 
 {% block body %}
-    <section class="auth-layout login-card">
-        <div class="auth-panel">
-            <div>
-                <h1 class="page-title">مرحباً بعودتك</h1>
-                <p class="page-subtitle">سجّل دخولك بالبريد الإلكتروني وكلمة المرور، أو استخدم Google للدخول السريع والآمن.</p>
-            </div>
-
-            <form method="post">
-                {% csrf_token %}
-                {% if form.non_field_errors %}
-                    <ul class="errorlist">
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                <div class="form-grid">
-                    <div class="form-field form-field--full">
-                        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
-                        {{ form.username }}
-                        {{ form.username.errors }}
-                    </div>
-
-                    <div class="form-field form-field--full">
-                        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-                        {{ form.password }}
-                        {{ form.password.errors }}
-                    </div>
-                </div>
-
-                <div class="auth-actions">
-                    <button type="submit" class="primary">تسجيل الدخول</button>
-                    <a class="button-link secondary" href="{% provider_login_url 'google' %}">الدخول باستخدام Google</a>
-                </div>
-            </form>
-
-            <div class="auth-footer">
-                <span>واجهة دخول مركزة وسريعة بدون عناصر إضافية مشتتة.</span>
-            </div>
+<section class="auth-layout login-card">
+    <div class="auth-panel">
+        <div>
+            <h1 class="page-title">مرحباً بعودتك</h1>
+            <p class="page-subtitle">سجّل دخولك بالبريد الإلكتروني وكلمة المرور، أو استخدم Google للدخول السريع والآمن.
+            </p>
         </div>
 
-        <div class="auth-visual">
-            <div class="auth-visual__shape">
-                <span class="auth-visual__letter">A</span>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <ul class="errorlist">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="form-grid">
+                <div class="form-field form-field--full">
+                    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="form-field form-field--full">
+                    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {{ form.password.errors }}
+                </div>
             </div>
+
+            <div class="auth-actions">
+                <button type="submit" class="primary">تسجيل الدخول</button>
+                <a class="button-link secondary" href="{% provider_login_url 'google' %}">الدخول باستخدام Google</a>
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            <span>واجهة دخول مركزة وسريعة بدون عناصر إضافية مشتتة.</span>
         </div>
-    </section>
+    </div>
+
+    <div class="auth-visual">
+        <div class="auth-visual__shape">
+            <span class="auth-visual__letter">A</span>
+        </div>
+    </div>
+</section>
 {% endblock %}

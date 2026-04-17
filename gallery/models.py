@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Painting(models.Model):
     title = models.CharField(max_length=100, unique=True, null=False, blank=False)
     picture = models.ImageField(upload_to="paintings/", null=False, blank=False)
@@ -11,6 +12,7 @@ class Painting(models.Model):
     def __str__(self):
         return self.title
 
+
 class Comments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     painting = models.ForeignKey(Painting, on_delete=models.CASCADE)
@@ -19,6 +21,7 @@ class Comments(models.Model):
 
     def __str__(self):
         return f"{self.user.username} on {self.painting.title}"
+
 
 class Likes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
