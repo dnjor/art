@@ -3,52 +3,43 @@
 {% block title %}تحديث لوحة{% endblock %}
 
 {% block body %}
-    <section class="auth-card stack">
-        <div>
-            <h1 class="page-title">تحديث لوحة</h1>
-        </div>
+<section class="auth-card stack">
+    <div>
+        <h1 class="page-title">تحديث لوحة</h1>
+    </div>
 
-        <form
-            action="{% url 'edit_painting' painting.id %}"
-            method="post"
-            enctype="multipart/form-data"
-        >
-            {% csrf_token %}
-            {% if form.non_field_error %}
-                <ul class="errorlist">
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+    <form action="{% url 'edit_painting' painting.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_error %}
+        <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
-            <div class="form-grid">
-                <div class="form-field">
-                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-                    {{ form.title }}
-                    {{ form.title.errors }}
-                </div>
-
-                <div class="form-field">
-                    <label for="{{ form.picture.id_for_label }}">{{ form.picture.label }}</label>
-                    {% if painting.picture %}
-                        <div class="stack">
-                            <img src="{{ painting.picture.url }}" alt="{{ painting.title }}" style="max-width: 220px; border-radius: 16px;">
-                            <small>اتركي هذا الحقل فارغاً إذا كنتِ لا تريدين تغيير الصورة الحالية.</small>
-                        </div>
-                    {% endif %}
-                    {{ form.picture }}
-                    {{ form.picture.errors }}
-                </div>
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {{ form.title.errors }}
             </div>
 
             <div class="form-field">
-                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                {{ form.description }}
-                {{ form.description.errors }}
+                <label>{{ form.picture.label }}</label>
+                <small>يمكنك تخطي هاذا الحقل,اذا تريد استخدام نفس الصوره </small>
+                <input type="file" name="picture" id="id_image">
             </div>
+        </div>
 
-            <button type="submit">تحديث</button>
-        </form>
-    </section>
+        <div class="form-field">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <button type="submit">تحديث</button>
+        <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى اللوحة</a>
+    </form>
+</section>
 {% endblock %}

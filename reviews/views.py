@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -9,12 +9,13 @@ from .models import Review
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
+
 @login_required
 def reviews_list(request):
     if not request.user.is_staff:
         return redirect("index")
-    
-    import_reviews_from_sheet() #to check if there a new review
+
+    import_reviews_from_sheet()  # to check if there a new review
 
     if request.method == "POST":
         review_id = request.POST.get("review_id")
@@ -23,26 +24,20 @@ def reviews_list(request):
         if not status or not review_id:
             messages.error(request, "حدث خطاء في تحديث حالة التقييم")
             return redirect("review")
-        
+
         review = get_object_or_404(Review, id=review_id)
         review.status = status
         review.save()
-        
+
         messages.success(request, "تم تحديث حالة التقييم بنجاح")
         return redirect("workshop_list")
-    
+
     reviews = Review.objects.all()
 
     for review in reviews:
         review.star_range = range(max(int(review.average or 0), 0))
 
-    return render(
-        request,
-        "reviews/reviews_list.html",
-        {
-            "reviews": reviews
-        }
-    )
+    return render(request, "reviews/reviews_list.html", {"reviews": reviews})
 
 
 def get_raw_sheet_data():
@@ -66,6 +61,7 @@ def get_raw_sheet_data():
 
     return result
 
+
 def print_result(result):
     data = result["values"]
     header = data[0]
@@ -73,6 +69,7 @@ def print_result(result):
 
     for question, answer in zip(header, first_row):
         print(f"{question}: {answer}")
+
 
 TIMESTAMP_INDEX = 0
 NAME_INDEX = 1
@@ -105,7 +102,7 @@ def import_reviews_from_sheet():
     if len(rows) <= 1:
         return
 
-    for row in rows[1:]:   # skip header
+    for row in rows[1:]:  # skip header
         if not any(str(cell).strip() for cell in row):
             continue
 

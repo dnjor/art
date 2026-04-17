@@ -3,7 +3,10 @@
 {% block title %}المعرض{% endblock %}
 
 {% block body %}
+
+
 <section class="stack">
+
     <div class="button-row">
         {% if user.is_staff %}
         <a class="button-link primary" href="{% url 'uplode_painting' %}">رفع لوحة جديدة</a>
@@ -15,13 +18,11 @@
         <p class="page-subtitle">تصفح مجموعة من الاعمال الفنية المعروضة واستمتع بتفاصيل كل لوحة ولمستها الابداعية</p>
     </div>
 
-    <div
-        class="card-grid gallery-container"
-        data-gallery-api-url="{% url 'api-gallery-list' %}"
-        data-detail-base-url="/gallery/painting/"
-        data-update-base-url="/gallery/update/"
-        data-delete-base-url="/gallery/delete/"
-    >
+    <span id="loader" class="loader hidden"></span>
+
+    <div class="card-grid gallery-container" data-gallery-api-url="{% url 'api-gallery-list' %}"
+        data-detail-base-url="/gallery/painting/" data-update-base-url="/gallery/update/"
+        data-delete-base-url="/gallery/delete/">
         <template id="painting-card-template">
             <article class="content-card gallery-card gallery-cards">
                 <a class="card-media link-painting" href="">

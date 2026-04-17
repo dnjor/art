@@ -1,11 +1,11 @@
 .env
+.venv/
 venv/
-.venv-1/
-.venv2/
-.media/
+
 __pycache__/
-*.pyc
+*.py[code]
 db.sqlite3
+credentials/
+
+media/
 staticfiles/
-.vscode/
-.credentials/

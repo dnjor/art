@@ -3,46 +3,58 @@
 {% block title %}المسجلون في الورشة{% endblock %}
 
 {% block body %}
-    <section class="stack">
-        <div>
-            <h1 class="page-title">المسجلون في ورشة: {{ workshop.title }}</h1>
-            <p class="page-subtitle">مراجعة الطلبات وإثباتات الدفع.</p>
+<section class="stack">
+    <div>
+        <h1 class="page-title">المسجلون في ورشة: {{ workshop.title }}</h1>
+        <p class="page-subtitle">مراجعة الطلبات وإثباتات الدفع.</p>
+    </div>
+
+    {% if registrations %}
+    <div class="card-grid">
+        {% for registration in registrations %}
+        <article class="content-card stack">
+            <div class="stack">
+                <h2>{{ registration.user.username }}</h2>
+                <p><strong> البريد الاكتروني: </strong> {{ registration.user.email }}</p>
+                <p><strong>الهاتف:</strong> {{ registration.user.profile.phone_number }}</p>
+                <p><strong>حالة الفع:</strong> {{ registration.get_payment_status_display }}</p>
+                <p><strong>تاريخ التسجيل:</strong> {{ registration.created_at }}</p>
+            </div>
+
+            {% if registration.payment_proof %}
+            <div class="stack">
+                <a href="{{ registration.payment_proof.url }}" target="_blank">عرض إثبات الدفع</a>
+                <img src="{{ registration.payment_proof.url }}" alt="إثبات الدفع">
+            </div>
+            {% else %}
+            <p>لم يتم رفع إثبات دفع.</p>
+            {% endif %}
+
+            {% if workshop.status == "open" or workshop.status == "closed" %}
+            <div class="button-row">
+                <a class="button-link primary"
+                    href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
+                <a class="button-link secondary"
+                    href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
+            </div>
+            {% endif %}
+        </article>
+        {% endfor %}
+
+
+    </div>
+
+    <section class="content-card d-grid gap-3">
+        <div class="d-flex flex-wrap gap-3">
+            <p class="mt-3">انتهت الورشة لا تستطيع قبول او رفض المسجلين </P>
+            <a class="button-link secondary" href="{% url 'workshop_detail' workshop.id %}">العودة الى تفاصيل الورشة
+            </a>
         </div>
-
-        {% if registrations %}
-            <div class="card-grid">
-                {% for registration in registrations %}
-                    <article class="content-card stack">
-                        <div class="stack">
-                            <h2>{{ registration.user.username }}</h2>
-                            <p><strong> البريد الاكتروني: </strong> {{  registration.user.email }}</p>
-                            <p><strong>الهاتف:</strong> {{  registration.user.profile.phone_number }}</p>
-                            <p><strong>حالة الفع:</strong> {{  registration.get_payment_status_display }}</p>
-                            <p><strong>تاريخ التسجيل:</strong> {{ registration.created_at }}</p>
-                        </div>
-
-                        {% if registration.payment_proof %}
-                            <div class="stack">
-                                <a href="{{ registration.payment_proof.url }}" target="_blank">عرض إثبات الدفع</a>
-                                <img src="{{ registration.payment_proof.url }}" alt="إثبات الدفع">
-                            </div>
-                        {% else %}
-                            <p>لم يتم رفع إثبات دفع.</p>
-                        {% endif %}
-
-                        {% if workshop.status == "open" or "closed" %}
-                        <div class="button-row">
-                            <a class="button-link primary" href="{% url 'update_registration_status' registration.id 'confirmed' %}">قبول</a>
-                            <a class="button-link secondary" href="{% url 'update_registration_status' registration.id 'rejected' %}">رفض</a>
-                        </div>
-                        {% endif %}
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="content-card">
-                <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>
-            </div>
-        {% endif %}
     </section>
+    {% else %}
+    <div class="content-card">
+        <p>لا يوجد مسجلون في هذه الورشة حتى الآن.</p>
+    </div>
+    {% endif %}
+</section>
 {% endblock %}

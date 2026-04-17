@@ -7,17 +7,17 @@ from workshop.views import send_email
 from .models import Painting, Comments, Likes
 from accounts.models import Profile
 
-def gallery(request):
-    """show all paintings in the gallery"""
 
+def gallery(request):
     return render(
         request,
         "gallery/gallery.html",
     )
 
+
 @login_required
 def uplode_painting(request):
-    """"uplode painting function for admin only"""
+    """ "uplode painting function for admin only"""
     if not request.user.is_staff:
         return redirect("index")
 
@@ -30,7 +30,7 @@ def uplode_painting(request):
 
         painting = form.save()
 
-        users = Profile.objects.filter(notifications=True).select_related('user')
+        users = Profile.objects.filter(notifications=True).select_related("user")
 
         for user in users:
 
@@ -47,11 +47,7 @@ def uplode_painting(request):
             منصة اروى الفنية
             """
 
-            send_email(
-                subject,
-                message,
-                [user.user.email]
-            )
+            send_email(subject, message, [user.user.email])
 
         messages.success(request, "تم رفع اللوحة بنجاح")
         return redirect("gallery")
@@ -65,9 +61,9 @@ def uplode_painting(request):
         }
     )
 
+
 @login_required
 def edit_painting(request, painting_id):
-    """edit painting function for admin only"""
     if not request.user.is_staff:
         return redirect("index")
 
@@ -75,18 +71,29 @@ def edit_painting(request, painting_id):
 
     if request.method == "POST":
         form = PaintingForm(request.POST, request.FILES, instance=painting)
+        new_picture = request.FILES.get("picture")
 
-        if not form.is_valid():
-            messages.error(request, "العنوان مطلوب")
-            return redirect("edit_painting", painting_id=painting_id)
+        if form.is_valid():
+            painting = form.save(commit=False)
 
-        form.save()
-        messages.success(request, "تم تحديث اللوحة بنجاح")
-        return redirect("gallery")
+            if new_picture:
+                painting.picture = new_picture
 
+            painting.save()
+            messages.success(request, "تم تحديث اللوحة بنجاح")
+            return redirect("gallery")
+
+        return render(
+            request,
+            "gallery/edit.html",
+            {
+                "painting": painting,
+                "form": form,
+            },
+        )
     form = PaintingForm(instance=painting)
     return render(
-        request,
+        request, 
         "gallery/edit.html",
         {
             "form": form,
@@ -94,9 +101,10 @@ def edit_painting(request, painting_id):
         }
     )
 
+
 @login_required
 def delete_painting(request, painting_id):
-    """Delete (archive) painting — admin only."""
+    """Delete (archive) painting """
     if not request.user.is_staff:
         return redirect("index")
 
@@ -110,7 +118,6 @@ def delete_painting(request, painting_id):
 
 @login_required
 def add_comment(request, painting_id):
-    """add comment function for paintings"""
     painting = get_object_or_404(Painting, id=painting_id)
 
     if request.method == "POST":
@@ -130,7 +137,7 @@ def add_comment(request, painting_id):
 
 @login_required
 def add_like(request, painting_id):
-    """"like and unlike function for paintings"""
+    """ "like and unlike function for paintings"""
     painting = get_object_or_404(Painting, id=painting_id)
     user = request.user
 
@@ -138,17 +145,17 @@ def add_like(request, painting_id):
         like = Likes.objects.filter(user=user, painting=painting)
 
         if like.exists():
-            #unlike
+            # unlike
             like.delete()
         else:
-            #like
+            # like
             Likes.objects.create(user=user, painting=painting)
 
     return redirect("painting_detail", painting_id=painting.id)
 
 
 def painting_detail(request, painting_id):
-    """"show the details of the painting"""
+    """ "show the details of the painting"""
     painting = get_object_or_404(Painting, id=painting_id)
     likes = Likes.objects.filter(painting=painting)
     comments = Comments.objects.filter(painting=painting).order_by("-created_at")
@@ -160,13 +167,12 @@ def painting_detail(request, painting_id):
 
     return render(
         request,
-        "gallery/painting_detail.html", 
+        "gallery/painting_detail.html",
         {
             "painting": painting,
             "comments": comments,
             "likes_count": likes.count(),
             "comments_count": comments.count(),
-            "user_liked": user_liked
-        }
+            "user_liked": user_liked,
+        },
     )
-

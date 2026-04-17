@@ -20,4 +20,3 @@ class WorkshopSerializer(serializers.ModelSerializer):
             "status",
             "created_at",
         ]
-

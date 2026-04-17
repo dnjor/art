@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startCountUpAnimation();
     startImageLoop();
+    startReviewLoop();
     loadGalleryPaintings();
     loadWorkShop();
-    initWorkshopReviews();
 });
 
 function startCountUpAnimation() {
@@ -52,13 +52,36 @@ function startImageLoop() {
     }, 5000);
 }
 
+
+function startReviewLoop() {
+    const review = document.querySelectorAll(".review-loop");
+    let current = 0;
+
+
+    if (review.length > 1) {
+        setInterval(() => {
+            review[current].classList.remove("active");
+            current = (current + 1) % review.length;
+            review[current].classList.add("active");
+        }, 5000);
+    }
+}
+
+function waitForNextFrame() {
+    return new Promise(requestAnimationFrame);
+}
+
 async function loadGalleryPaintings() {
     const container = document.querySelector(".gallery-container");
     const template = document.getElementById("painting-card-template");
+    const loader = document.getElementById("loader");
 
-    if (!container || !template) {
+    if (!container || !template || !loader) {
         return;
     }
+
+    loader.classList.remove("hidden")
+    await waitForNextFrame();
 
     try {
         const response = await fetch(container.dataset.galleryApiUrl, {
@@ -108,6 +131,8 @@ async function loadGalleryPaintings() {
     } catch (error) {
         console.error("Error loading gallery:", error);
         container.innerHTML = "<p>Could not load the gallery right now.</p>";
+    } finally {
+        loader.classList.add("hidden");
     }
 }
 
@@ -115,10 +140,15 @@ async function loadGalleryPaintings() {
 async function loadWorkShop() {
     const container = document.querySelector(".workshop-container");
     const template = document.getElementById("workshop-card-template");
+    const loader = document.getElementById("loader");
+    const review = document.querySelector(".rate-showcase");
 
-    if (!container || !template) {
+    if (!container || !template || !loader) {
         return;
     }
+
+    loader.classList.remove("hidden");
+    review.classList.add("hidden");
 
     try {
         const response = await fetch(container.dataset.workshopApiUrl, {
@@ -169,5 +199,8 @@ async function loadWorkShop() {
     } catch (error) {
         console.error("Error loading workshop:", error);
         container.innerHTML = "<div class='content-card'><p>لا توجد ورش عمل حالياً.</p> </div>";
+    } finally {
+        loader.classList.add("hidden");
+        review.classList.remove("hidden");
     }
 }

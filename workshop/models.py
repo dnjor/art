@@ -11,9 +11,7 @@ class Workshop(models.Model):
     ]
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="workshops"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="workshops"
     )
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to="workshops/")
@@ -26,6 +24,7 @@ class Workshop(models.Model):
     sessions = models.PositiveIntegerField()
     zoom_link = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
+    registration_email_sent_at = models.DateTimeField(null=True, blank=True) #to know when we send the review link
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -40,20 +39,16 @@ class Registration(models.Model):
     ]
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="registrations"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="registrations"
     )
     workshop = models.ForeignKey(
-        Workshop,
-        on_delete=models.CASCADE,
-        related_name="registrations"
+        Workshop, on_delete=models.CASCADE, related_name="registrations"
     )
-    payment_proof = models.ImageField(upload_to="payment_proofs/", blank=True, null=True)
+    payment_proof = models.ImageField(
+        upload_to="payment_proofs/", blank=True, null=True
+    )
     payment_status = models.CharField(
-        max_length=20,
-        choices=PAYMENT_STATUS_CHOICES,
-        default="under_review"
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default="under_review"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

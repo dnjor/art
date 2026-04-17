@@ -1139,6 +1139,29 @@ button:hover,
     opacity: 1 !important;
 }
 
+.rate-card-track {
+    min-height: 220px;
+    position: relative;
+}
+
+.review-loop {
+    display: none;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 16px;
+    transform: translateY(12px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.review-loop.active {
+    display: block;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: translateY(0);
+
+}
+
 .div-gallery-container {
     position: relative !important;
     width: 100% !important;
@@ -1352,5 +1375,63 @@ button:hover,
     .description-rate {
         font-size: 0.9rem;
         line-height: 1.7;
+    }
+}
+
+.hidden{
+    display: none;
+}
+
+.loader {
+    width: calc(100px - 24px);
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    animation: flippx 2s infinite linear;
+    margin-bottom: 20px;
+}
+
+.loader:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4f7cff;
+    transform-origin: -24px 50%;
+    animation: spin 1s infinite linear;
+}
+
+.loader:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #d946ef;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+@keyframes flippx {
+
+    0%,
+    49% {
+        transform: scaleX(1);
+    }
+
+    50%,
+    100% {
+        transform: scaleX(-1);
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
     }
 }
