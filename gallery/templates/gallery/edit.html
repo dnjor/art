@@ -8,7 +8,7 @@
         <h1 class="page-title">تحديث لوحة</h1>
     </div>
 
-    <form action="{% url 'edit_painting' painting.id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'gallery:edit_painting' painting.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% if form.non_field_error %}
         <ul class="errorlist">
@@ -39,7 +39,7 @@
         </div>
 
         <button type="submit">تحديث</button>
-        <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى اللوحة</a>
+        <a class="button-link secondary" href="{% url 'gallery:painting_detail' painting.id %}">العودة إلى اللوحة</a>
     </form>
 </section>
 {% endblock %}

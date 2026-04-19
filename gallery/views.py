@@ -19,14 +19,14 @@ def gallery(request):
 def uplode_painting(request):
     """ "uplode painting function for admin only"""
     if not request.user.is_staff:
-        return redirect("index")
+        return redirect("gallery:gallery")
 
     if request.method == "POST":
         form = PaintingForm(request.POST, request.FILES)
 
         if not form.is_valid():
             messages.error(request, "العنوان والصورة مطلوبان")
-            return redirect("uplode_painting")
+            return redirect("gallery:uplode_painting")
 
         painting = form.save()
 
@@ -50,7 +50,7 @@ def uplode_painting(request):
             send_email(subject, message, [user.user.email])
 
         messages.success(request, "تم رفع اللوحة بنجاح")
-        return redirect("gallery")
+        return redirect("gallery:gallery")
 
     form = PaintingForm()
     return render(
@@ -65,7 +65,7 @@ def uplode_painting(request):
 @login_required
 def edit_painting(request, painting_id):
     if not request.user.is_staff:
-        return redirect("index")
+        return redirect("gallery:gallery")
 
     painting = get_object_or_404(Painting, id=painting_id)
 
@@ -81,7 +81,7 @@ def edit_painting(request, painting_id):
 
             painting.save()
             messages.success(request, "تم تحديث اللوحة بنجاح")
-            return redirect("gallery")
+            return redirect("gallery:gallery")
 
         return render(
             request,
@@ -106,14 +106,14 @@ def edit_painting(request, painting_id):
 def delete_painting(request, painting_id):
     """Delete (archive) painting """
     if not request.user.is_staff:
-        return redirect("index")
+        return redirect("gallery:gallery")
 
     painting = Painting.objects.get(id=painting_id)
     painting.is_active = False
     painting.save()
 
     messages.success(request, "تم حذف اللوحة بنجاح")
-    return redirect("gallery")
+    return redirect("gallery:gallery")
 
 
 @login_required
@@ -132,7 +132,7 @@ def add_comment(request, painting_id):
         else:
             messages.error(request, "التعليق لا يمكن ان يكون فارغ")
 
-    return redirect("painting_detail", painting_id=painting_id)
+    return redirect("gallery:painting_detail", painting_id=painting_id)
 
 
 @login_required
@@ -151,7 +151,7 @@ def add_like(request, painting_id):
             # like
             Likes.objects.create(user=user, painting=painting)
 
-    return redirect("painting_detail", painting_id=painting.id)
+    return redirect("gallery:painting_detail", painting_id=painting.id)
 
 
 def painting_detail(request, painting_id):

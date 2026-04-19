@@ -22,14 +22,14 @@
             </div>
 
             <div class="painting-detail-actions">
-                <form class="painting-like-form" method="post" action="{% url 'add_like' painting.id %}">
+                <form class="painting-like-form" method="post" action="{% url 'gallery:add_like' painting.id %}">
                     {% csrf_token %}
                     <button type="submit"
                         class="{% if user_liked %}button secondary{% else %}button primary{% endif %}">
                         {% if user_liked %}إزالة الإعجاب{% else %}أعجبني{% endif %}
                     </button>
                 </form>
-                <a class="button-link secondary" href="{% url 'gallery' %}">العودة إلى المعرض</a>
+                <a class="button-link secondary" href="{% url 'gallery:gallery' %}">العودة إلى المعرض</a>
             </div>
         </article>
 
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <form class="comment-form-layout" method="post" action="{% url 'add_comment' painting.id %}">
+        <form class="comment-form-layout" method="post" action="{% url 'gallery:add_comment' painting.id %}">
             {% csrf_token %}
             <div class="form-field">
                 <label for="comment">إضافة تعليق</label>
