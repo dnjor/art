@@ -76,9 +76,9 @@
                 {% endif %}
 
                 <div class="d-flex flex-wrap gap-3">
-                    <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
+                    <a class="button-link secondary" href="{% url 'workshop:workshop_list' %}">العودة إلى الورش</a>
                     {% if workshop.status == "open" %}
-                    <a class="button-link primary" href="{% url 'register_workshop' workshop.id %}">التسجيل في
+                    <a class="button-link primary" href="{% url 'workshop:register_workshop' workshop.id %}">التسجيل في
                         الورشة</a>
                     {% endif %}
                 </div>
@@ -99,11 +99,11 @@
     {% if user.is_authenticated and user.is_staff %}
     <section class="content-card d-grid gap-3">
         <div class="d-flex flex-wrap gap-3">
-            <a class="button-link secondary" href="{% url 'update_workshop' workshop.id %}">تعديل الورشة</a>
-            <a class="button-link secondary" href="{% url 'workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات
+            <a class="button-link secondary" href="{% url 'workshop:update_workshop' workshop.id %}">تعديل الورشة</a>
+            <a class="button-link secondary" href="{% url 'workshop:workshop_registrations' workshop.id %}">عرض المسجلين وإثباتات
                 الدفع</a>
             {% if workshop.status == "ended" and not workshop.registration_email_sent_at %}
-            <a class="button-link secondary" href="{% url 'send_link_review' workshop.id %}">ارسال رابط تقييم
+            <a class="button-link secondary" href="{% url 'workshop:send_link_review' workshop.id %}">ارسال رابط تقييم
                 للمشاركين</a>
             {% endif %}
         </div>

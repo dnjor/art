@@ -38,7 +38,7 @@ def workshop_list(request):
 def create_workshop(request):
     """ "Create a new workshop, only staff users can access this view"""
     if not request.user.is_staff:
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     if request.method == "POST":
         form = WorkshopForm(request.POST, request.FILES)
@@ -70,7 +70,7 @@ def create_workshop(request):
                 send_email(subject, message, [user.user.email])
 
             messages.success(request, "تم إنشاء الورشة بنجاح")
-            return redirect("workshop_list")
+            return redirect("workshop:workshop_list")
     else:
         form = WorkshopForm(initial={"status": "open"})
 
@@ -84,7 +84,7 @@ def create_workshop(request):
 @login_required
 def update_workshop(request, workshop_id):
     if not request.user.is_staff:
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     close_expired_workshops()
     workshop = get_object_or_404(Workshop, id=workshop_id)
@@ -101,7 +101,7 @@ def update_workshop(request, workshop_id):
 
         workshop.save()
         messages.success(request, "تم تحديث الورشة بنجاح")
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
     else:
         form = WorkshopForm(instance=workshop)
 
@@ -149,7 +149,7 @@ def register_workshop(request, workshop_id):
                 request,
                 "تم رفع إثبات الدفع بنجاح، سيتم مراجعة طلبك قريبًا, واعلامك عبر البريد الإلكتروني",
             )
-            return redirect("workshop_detail", workshop_id=workshop.id)
+            return redirect("workshop:workshop_detail", workshop_id=workshop.id)
         else:
             messages.error(
                 request, "حدث خطأ في رفع إثبات الدفع، يرجى المحاولة مرة أخرى"
@@ -166,7 +166,7 @@ def register_workshop(request, workshop_id):
 def workshop_registrations(request, workshop_id):
     """Display all the registrations how regisrt in the workshop"""
     if not request.user.is_staff:
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     workshop = get_object_or_404(Workshop, id=workshop_id)
     registrations = workshop.registrations.select_related(
@@ -187,13 +187,13 @@ def workshop_registrations(request, workshop_id):
 def update_registration_status(request, workshop_id, registration_user):
     """Updating by confirmed or rejected for evrey registrations"""
     if not request.user.is_staff:
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     workshop = get_object_or_404(Workshop, id=workshop_id)
     registration = Registration.objects.get(workshop=workshop, user=registration_user)
 
     if request.method == "POST":
-        status = request.POST.get("status")
+        status = request.POST.get("payment_status")
 
         if status == "confirmed":
             subject = f" تحديث بخصوص طلبك في ورشة العمل: {workshop.title}"
@@ -231,30 +231,30 @@ def update_registration_status(request, workshop_id, registration_user):
         
         else:
             messages.error(request, "الرجاء تحديد حالة التسجيل بقول او الرفض.")
-            return redirect("workshop_registrations", workshop_id=workshop.id)
+            return redirect("workshop:workshop_registrations", workshop_id=workshop.id)
 
         registration.payment_status = status
         registration.save()
 
         messages.success(request, "تم تحديث حالة التسجيل بنجاح.")
-        return redirect("workshop_registrations", workshop_id=workshop.id)
+        return redirect("workshop:workshop_registrations", workshop_id=workshop.id)
 
 
 @login_required
 def send_link_review(request, workshop_id):
     if not request.user.is_staff:
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     registrations = Registration.objects.filter(workshop=workshop_id)
     workshop = get_object_or_404(Workshop, id=workshop_id)
 
     if workshop.registration_email_sent_at:
         messages.error(request, "تم ارسال للمشاركين رابط التقييم من قبل.")
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     if not registrations.exists():
         messages.error(request, "لا يوجد مسجلين في الورشة")
-        return redirect("workshop_list")
+        return redirect("workshop:workshop_list")
 
     for registration in registrations:
         subject = f" شاركنا رأيك في الورشة - تقييمك يهمنا {registration.workshop.title}"
@@ -275,7 +275,7 @@ def send_link_review(request, workshop_id):
     workshop.registration_email_sent_at = timezone.now()
     workshop.save()
     messages.success(request, "تم ارسال رابط التقييم لجميع المسجلين")
-    return redirect("workshop_list")
+    return redirect("workshop:workshop_list")
 
 
 def send_email(subject, message, recipient_list):
