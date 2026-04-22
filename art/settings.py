@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from dj_database_url import config, parse
+import cloudinary
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,6 +33,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
 
 
 # Application definition
@@ -53,6 +56,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "rest_framework",
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
 
@@ -118,7 +123,7 @@ WSGI_APPLICATION = "art.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-USE_SQLITE = os.getenv("USE_SQLITE", "True").lower() == "true"
+USE_SQLITE = os.getenv("USE_SQLITE", "False").lower() == "true"
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if USE_SQLITE:
