@@ -196,6 +196,7 @@ EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL").lower() == "true"
 GOOGLE_SHEETS_CREDENTIALS_FILE = BASE_DIR / os.getenv("GOOGLE_SHEETS_CREDENTIALS_FILE")
 GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
 GOOGLE_SHEET_RANGE = os.getenv("GOOGLE_SHEET_RANGE")
+GOOGLE_SHEETS_CREDENTALS_JSON = os.getenv("GOOGLE_SHEETS_CREDENTALS_JSON")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

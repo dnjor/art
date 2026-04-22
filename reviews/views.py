@@ -5,6 +5,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
+from pathlib import Path
 
 from .models import Review
 
@@ -48,11 +49,37 @@ def sync_review_from_sheet(request):
     return redirect("reviews_list")
 
 
+def get_google_credentials():
+    # First: try JSON from environment (best for Render)
+
+    if settings.GOOGLE_SHEETS_CREDENTIALS_JSON:
+
+        return Credentials.from_service_account_info(
+
+            json.loads(settings.GOOGLE_SHEETS_CREDENTIALS_JSON),
+
+            scopes=SCOPES
+
+        )
+
+    # Second: try local file (best for local development)
+    if settings.GOOGLE_SHEETS_CREDENTIALS_FILE:
+
+        credentials_path = Path(settings.BASE_DIR) / settings.GOOGLE_SHEETS_CREDENTIALS_FILE
+
+        return Credentials.from_service_account_file(
+
+            str(credentials_path),
+
+            scopes=SCOPES
+
+        )
+
+    raise ValueError("Google Sheets credentials are missing")
+
+
 def get_raw_sheet_data():
-    credentials = Credentials.from_service_account_file(
-        settings.GOOGLE_SHEETS_CREDENTIALS_FILE,
-        scopes=SCOPES,
-    )
+    credentials = get_google_credentails()
 
     service = build("sheets", "v4", credentials=credentials)
 
