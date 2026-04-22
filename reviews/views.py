@@ -63,7 +63,7 @@ def get_google_credentials():
         )
 
     # Second: try local file (best for local development)
-    if settings.GOOGLE_SHEETS_CREDENTIALS_FILE:
+    """if settings.GOOGLE_SHEETS_CREDENTIALS_FILE:
 
         credentials_path = Path(settings.BASE_DIR) / settings.GOOGLE_SHEETS_CREDENTIALS_FILE
 
@@ -73,7 +73,7 @@ def get_google_credentials():
 
             scopes=SCOPES
 
-        )
+        )"""
 
     raise ValueError("Google Sheets credentials are missing")
 
