@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from io import BytesIO
 from PIL import Image
+from unittest.mock import patch
+import cloudinary
 
 from accounts.test_base import SocialAppTestCase
 from .models import Painting
@@ -11,7 +13,9 @@ from .models import Painting
 User = get_user_model()
 
 class GalleryBaseTestCase(SocialAppTestCase):
-    def generate_test_image_file(self):
+
+    @staticmethod
+    def generate_test_image_file():
         file_obj = BytesIO()
         image = Image.new("RGB", (100,100), color="red")
         image.save(file_obj, "JPEG")
@@ -23,28 +27,59 @@ class GalleryBaseTestCase(SocialAppTestCase):
             content_type="image/jpeg"
         )
 
+    @classmethod
+    def get_mock_cloudinary_response():
+        return {
+            "public_id": "test_image",
+            "version": "123",
+            "signature": "abc123",
+            "width": 100,
+            "height": 100,
+            "format": "jpg",
+            "resource_type": "image",
+            "type": "upload",
+            "url": "https://example.com/test.jpg",
+            "secure_url": "https://example.com/test.jpg"
+        }
 
-    def setUp(self):
-        self.normal_user = User.objects.create_user(
-            username= "ali",
-            email= "ali@gmail.com",
-            password="password123",
-            is_active=True
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cloudinary.config(
+            cloud_name="test",
+            api_kay="123",
+            api_secret="fake",
+            secure=True
+        ) 
+
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        with patch("cloudinary.models.CloudinaryField.pre_save", return_value="test_image"):
+
+            cls.normal_user = User.objects.create_user(
+                username=f"user_{cls.__name__}",
+                email=f"user_{cls.__name__.lower()}@gmail.com",
+                password="password123",
+                is_active=True
             )
 
-        self.staff_user = User.objects.create_user(
-            username= "admin",
-            email= "admin@gmail.com",
-            password="admind123",
-            is_active=True,
-            is_staff=True
+            cls.staff_user = User.objects.create_user(
+                username= f"staff_{cls.__name__}",
+                email= f"staff_{cls.__name__.lower()}@gmail.com",
+                password="admind123",
+                is_active=True,
+                is_staff=True
             )
 
-        self.painting = Painting.objects.create(
-            title="ksa",
-            picture = self.generate_test_image_file(),
-            description="my home <3"
-        )
+            cls.painting = Painting.objects.create(
+                title=f"title_{cls.__name__}",
+                picture = cls.generate_test_image_file(),
+                description="my home <3"
+            )
 
 
 class GalleryViewPageTest(GalleryBaseTestCase):
@@ -71,14 +106,15 @@ class GalleryUploadePaintingTest(GalleryBaseTestCase):
 
         picture = self.generate_test_image_file()
 
-        response = self.client.post(
-            reverse("gallery:uplode_painting"),
-            {
-                "title": "بحر العشاق",
-                "picture": picture,
-            },
-            follow=True
-        )
+        with patch("cloudinary.models.CloudinaryField.pre_save", return_value="test_image"):
+            response = self.client.post(
+                reverse("gallery:uplode_painting"),
+                {
+                    "title": "بحر العشاق",
+                    "picture": picture,
+                },
+                follow=True
+            )
 
         self.assertTrue(Painting.objects.filter(title="بحر العشاق").exists())
         painting = Painting.objects.get(title="بحر العشاق")

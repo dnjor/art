@@ -7,6 +7,8 @@ from PIL import Image
 from datetime import datetime
 from django.core import mail
 from .views import send_email
+from unittest.mock import patch
+import cloudinary
 
 from accounts.test_base import SocialAppTestCase
 from .models import Workshop, Registration
@@ -29,47 +31,75 @@ class WorkshopBaseTestCase(SocialAppTestCase):
             content_type="image/jpeg"
         )
 
+    @staticmethod
+    def get_mock_cloudinary_response():
+        return {
+            "public_id": "test_image",
+            "version": "123",
+            "signature": "abc123",
+            "width": 100,
+            "height": 100,
+            "format": "jpg",
+            "resource_type": "image",
+            "type": "upload",
+            "url": "https://example.com/test.jpg",
+            "secure_url": "https://example.com/test.jpg"
+        }
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cloudinary.config(
+            cloud_name="test",
+            api_kay="123",
+            api_secret="fake",
+            secure=True
+        )    
+
+
     @classmethod
     def setUpTestData(cls):
-        cls.normal_user = User.objects.create_user(
-            username="ali",
-            email="ali@gmail.com",
-            password="password123",
-            is_active=True
-        )
+        with patch("cloudinary.models.CloudinaryField.pre_save", return_value="test_image"):
+
+            cls.normal_user = User.objects.create_user(
+                username="ali",
+                email="ali@gmail.com",
+                password="password123",
+                is_active=True
+            )
         
-        cls.profile = Profile.objects.create(
-            user=cls.normal_user,
-            phone_number="0511111111",
-            notifications=True
-        )
+            cls.profile = Profile.objects.create(
+                user=cls.normal_user,
+                phone_number="0511111111",
+                notifications=True
+            )
 
-        cls.staff_user = User.objects.create_user(
-            username="admin",
-            email="admin@gmail.com",
-            password="admin123",
-            is_active=True,
-            is_staff=True
-        )
+            cls.staff_user = User.objects.create_user(
+                username="admin",
+                email="admin@gmail.com",
+                password="admin123",
+                is_active=True,
+                is_staff=True
+            )
 
-        cls.workshop = Workshop.objects.create(
-            user=cls.staff_user,
-            title="ورشة فحم",
-            image=cls.generate_test_image_file(),
-            description="راح نتعلم كيف نقدر نتسخدم الفحم على اللوحات",
-            start_date=datetime(2026, 4, 20, 10, 30),
-            end_date=datetime(2026, 4, 29, 10, 30),
-            deadline=datetime(2026, 4, 19, 10, 30),
-            cost="100",
-            sessions="10",
-        )
+            cls.workshop = Workshop.objects.create(
+                user=cls.staff_user,
+                title="ورشة فحم",
+                image=cls.generate_test_image_file(),
+                description="راح نتعلم كيف نقدر نتسخدم الفحم على اللوحات",
+                start_date=datetime(2026, 4, 20, 10, 30),
+                end_date=datetime(2026, 4, 29, 10, 30),
+                deadline=datetime(2026, 4, 19, 10, 30),
+                cost="100",
+                sessions="10",
+            )
 
-        cls.register = Registration.objects.create(
-            user=cls.normal_user,
-            workshop=cls.workshop,
-            payment_proof=cls.generate_test_image_file(),
-            payment_status="under_review",
-        )
+            cls.register = Registration.objects.create(
+                user=cls.normal_user,
+                workshop=cls.workshop,
+                payment_proof=cls.generate_test_image_file(),
+                payment_status="under_review",
+            )
 
     def get_valid_workshop_data(self, **overrides):
         data = {
@@ -170,19 +200,20 @@ class WorkshopUpdateWorkshopTest(WorkshopBaseTestCase):
     def test_staff_can_edit_workshop(self):
         self.client.force_login(self.staff_user)
 
-        response = self.client.post(
-            reverse("workshop:update_workshop", kwargs={"workshop_id": self.workshop.id}),
-            self.get_valid_workshop_data(
-                title="ورشة الاوان خشبية",
-                description="راح نتعلم كيف نقدر نتسخدم الاوان الخشبيه على اللوحات",
-                start_date="2026-05-01 10:30:00",
-                end_date="2026-06-01 10:30:00",
-                deadline="2026-04-27 10:30:00",
-                cost="200",
-                sessions="14",
-            ),
-            follow=True
-        )
+        with patch("cloudinary.models.CloudinaryField.pre_save", return_value="test_image"):
+            response = self.client.post(
+                reverse("workshop:update_workshop", kwargs={"workshop_id": self.workshop.id}),
+                self.get_valid_workshop_data(
+                    title="ورشة الاوان خشبية",
+                    description="راح نتعلم كيف نقدر نتسخدم الاوان الخشبيه على اللوحات",
+                    start_date="2026-05-01 10:30:00",
+                    end_date="2026-06-01 10:30:00",
+                    deadline="2026-04-27 10:30:00",
+                    cost="200",
+                    sessions="14",
+                ),
+                follow=True
+            )
 
         self.workshop.refresh_from_db()
 
@@ -204,12 +235,13 @@ class RegistrationViewPageTest(WorkshopBaseTestCase):
     def test_user_can_register_to_workshop(self):
         self.client.force_login(self.normal_user)
 
-        response = self.client.post(
-            reverse("workshop:register_workshop",
-                    kwargs={"workshop_id": self.workshop.id}),
-                self.get_valid_register_date(),
-            follow=True
-        )
+        with patch("cloudinary.models.CloudinaryField.pre_save", return_value="test_image"):
+            response = self.client.post(
+                reverse("workshop:register_workshop",
+                        kwargs={"workshop_id": self.workshop.id}),
+                    self.get_valid_register_date(),
+                follow=True
+            )
 
         self.assertEqual(self.register.payment_status, "under_review")
         self.assertRedirects(response, reverse("workshop:workshop_detail", kwargs={"workshop_id": self.workshop.id}))
@@ -286,3 +318,4 @@ class EmailFunctionTest(WorkshopBaseTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "الموت الاحمر")
         self.assertNotEqual(mail.outbox[0].message, "معصوب")
+

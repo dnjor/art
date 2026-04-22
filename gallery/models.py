@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 
 class Painting(models.Model):
     title = models.CharField(max_length=100, unique=True, null=False, blank=False)
-    picture = models.ImageField(upload_to="paintings/", null=False, blank=False)
+    picture = CloudinaryField("paintings", null=False, blank=False)
     description = models.TextField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
