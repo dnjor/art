@@ -79,7 +79,7 @@ def get_google_credentials():
 
 
 def get_raw_sheet_data():
-    credentials = get_google_credentails()
+    credentials = get_google_credentials()
 
     service = build("sheets", "v4", credentials=credentials)
 
