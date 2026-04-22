@@ -8,8 +8,8 @@
 <section class="stack">
     <div class="button-row">
         {% if user.is_authenticated and user.is_staff %}
-        <a class="button-link primary" href="{% url 'create_workshop' %}">إنشاء ورشة عمل</a>
-        <a class="button-link primary" href="{% url 'reviews_list' %}">عرض التقيمات</a>
+        <a class="button-link primary" href="{% url 'workshop:create_workshop' %}">إنشاء ورشة عمل</a>
+        <a class="button-link primary" href="{% url 'reviews:reviews_list' %}">عرض التقيمات</a>
 
         {% endif %}
     </div>

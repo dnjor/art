@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Workshop(models.Model):
@@ -14,7 +15,7 @@ class Workshop(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="workshops"
     )
     title = models.CharField(max_length=200)
-    image = models.ImageField(upload_to="workshops/")
+    image = CloudinaryField("workshops")
     description = models.TextField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField(blank=True, null=True)
@@ -44,8 +45,8 @@ class Registration(models.Model):
     workshop = models.ForeignKey(
         Workshop, on_delete=models.CASCADE, related_name="registrations"
     )
-    payment_proof = models.ImageField(
-        upload_to="payment_proofs/", blank=True, null=True
+    payment_proof = CloudinaryField(
+        "payment_proofs", blank=True, null=True
     )
     payment_status = models.CharField(
         max_length=20, choices=PAYMENT_STATUS_CHOICES, default="under_review"

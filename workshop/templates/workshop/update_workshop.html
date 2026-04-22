@@ -8,7 +8,7 @@
         <h1 class="page-title">تعديل ورشة عمل</h1>
     </div>
 
-    <form action="{% url 'update_workshop' workshop.id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'workshop:update_workshop' workshop.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% if form.non_field_errors %}
         <ul class="errorlist">
@@ -90,7 +90,7 @@
         </div>
 
         <button type="submit">حفظ التعديلات</button>
-        <a class="button-link secondary" href="{% url 'workshop_list' %}">العودة إلى الورش</a>
+        <a class="button-link secondary" href="{% url 'workshop:workshop_list' %}">العودة إلى الورش</a>
     </form>
 </section>
 {% endblock %}

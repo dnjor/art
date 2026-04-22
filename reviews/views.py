@@ -15,7 +15,7 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 @login_required
 def reviews_list(request):
     if not request.user.is_staff:
-        return redirect("index")
+        return redirect("accounts:index")
 
     if request.method == "POST":
         review_id = request.POST.get("review_id")
@@ -23,14 +23,14 @@ def reviews_list(request):
 
         if not status or not review_id:
             messages.error(request, "حدث خطاء في تحديث حالة التقييم")
-            return redirect("review")
+            return redirect("reviews:reviews_list")
 
         review = get_object_or_404(Review, id=review_id)
         review.status = status
         review.save()
 
         messages.success(request, "تم تحديث حالة التقييم بنجاح")
-        return redirect("reviews_list")
+        return redirect("reviews:reviews_list")
 
     reviews = Review.objects.all()
 
@@ -46,7 +46,7 @@ def sync_review_from_sheet(request):
     """when the admin want to update the new reviews"""
     import_reviews_from_sheet()
     messages.success(request, "تم تحديث التقيمات")
-    return redirect("reviews_list")
+    return redirect("reviews:reviews_list")
 
 
 def get_google_credentials():
