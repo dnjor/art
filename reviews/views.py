@@ -6,6 +6,8 @@ from googleapiclient.discovery import build
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from pathlib import Path
+from json import loads
+import base64
 
 from .models import Review
 
@@ -56,24 +58,24 @@ def get_google_credentials():
 
         return Credentials.from_service_account_info(
 
-            json.loads(settings.GOOGLE_SHEETS_CREDENTIALS_JSON),
+            loads(settings.GOOGLE_SHEETS_CREDENTIALS_JSON),
 
             scopes=SCOPES
 
         )
 
     # Second: try local file (best for local development)
-    """if settings.GOOGLE_SHEETS_CREDENTIALS_FILE:
+    if settings.GOOGLE_SHEETS_CREDENTIALS_FILE:
 
         credentials_path = Path(settings.BASE_DIR) / settings.GOOGLE_SHEETS_CREDENTIALS_FILE
-
+        print(credentials_path)
         return Credentials.from_service_account_file(
 
             str(credentials_path),
 
             scopes=SCOPES
 
-        )"""
+        )
 
     raise ValueError("Google Sheets credentials are missing")
 
