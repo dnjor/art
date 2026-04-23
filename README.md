@@ -9,7 +9,7 @@ The main idea behind this project was to create a space that introduces the arti
 ## Live Website
 
 The project is available online here:  
-[Add your live website link here]
+["https://arwa-art.onrender.com"]
 
 > The deployed version is the best way to explore the full experience of the project.
 
@@ -219,19 +219,19 @@ There are still several things I would like to improve in future versions of the
 ## Screenshots
 
 ### Home Page
-![Home Page](add-image-link-here)
+![Home Page](Secreenshots/home-page.jpeg)
 
 ### Gallery
-![Gallery](add-image-link-here)
+![Gallery](Secreenshots/gallery.jpeg)
 
 ### Painting Details
-![Painting Details](add-image-link-here)
+![Painting Details](Secreenshots/painting-detalis.jpeg)
 
 ### Workshops
-![Workshops](add-image-link-here)
+![Workshops](Secreenshots/workshop.jpeg)
 
 ### Dashboard
-![Dashboard](add-image-link-here)
+![Dashboard](Secreenshots/dashboard.jpeg)
 
 ---
 
