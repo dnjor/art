@@ -225,7 +225,7 @@ There are still several things I would like to improve in future versions of the
 ![Gallery](Screenshots/gallery.jpeg)
 
 ### Painting Details
-![Painting Details](Screenshots/painting-detalis.jpeg)
+![Painting Details](Screenshots/painting-details.jpeg)
 
 ### Workshops
 ![Workshops](Screenshots/workshop.jpeg)
