@@ -219,19 +219,19 @@ There are still several things I would like to improve in future versions of the
 ## Screenshots
 
 ### Home Page
-![Home Page](Secreenshots/home-page.jpeg)
+![Home Page](Screenshots/home-page.jpeg)
 
 ### Gallery
-![Gallery](Secreenshots/gallery.jpeg)
+![Gallery](Screenshots/gallery.jpeg)
 
 ### Painting Details
-![Painting Details](Secreenshots/painting-detalis.jpeg)
+![Painting Details](Screenshots/painting-detalis.jpeg)
 
 ### Workshops
-![Workshops](Secreenshots/workshop.jpeg)
+![Workshops](Screenshots/workshop.jpeg)
 
 ### Dashboard
-![Dashboard](Secreenshots/dashboard.jpeg)
+![Dashboard](Screenshots/dashboard.jpeg)
 
 ---
 
